@@ -1,0 +1,25 @@
+head
+    meta(charset='utf-8')
+    meta(name="fragment" content="!")
+    base(href="/")
+    title().
+        #{title}
+    <!-- Load react - no need to use import as all react components will be available globally -->
+    //script(src="https://unpkg.com/react@18/umd/react.development.js" crossorigin)
+    //script(src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin)
+
+    <!-- Don't use this in production: -->
+    //script(src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin)
+
+    <!-- Load our react app -->
+    //script(src='/assets/js/app.js' type="module")
+    //script(src='/assets/js/index.js' type="module")
+
+    <!-- Load tailwind for production -->
+    //script(src="https://cdn.tailwindcss.com")
+    link(rel='stylesheet', href='/assets/css/output.css')
+
+    <!-- When fonts are finalized load them properly -->
+    link(rel="preconnect" href="https://fonts.googleapis.com")
+    link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
+    link(href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet")
