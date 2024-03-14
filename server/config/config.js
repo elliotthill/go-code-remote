@@ -1,7 +1,7 @@
 module.exports =
 {
     "development": {
-        "username": "root",
+        "username": process.env.DB_USERNAME,
         "password": "root",
         "database": "testing",
         "host": "127.0.0.1",
@@ -17,7 +17,6 @@ module.exports =
         "logging": false
     },
     "production": {
-        "use_env_variable": true,
         "username": process.env.DB_USERNAME,
         "password": process.env.DB_PASSWORD,
         "database": process.env.DB_DATABASE,
