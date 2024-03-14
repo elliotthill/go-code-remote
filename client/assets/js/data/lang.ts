@@ -20,7 +20,7 @@ const LangOptions = [
     { value: 50, label: "Go" },
     { value: 55, label: "Kotlin" },
     { value: 56, label: "Ruby" },
-    { value: 57, label: "OOP" },
+    { value: 66, label: "OOP" },
     { value: 73, label: "Scripting" },
 ];
 
