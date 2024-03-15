@@ -1,4 +1,4 @@
-# GoCodeRemote.com
+# Repo of [GoCodeRemote](https://gocoderemote.com/)
 
 This repository contains the back and front end of the website GoCodeRemote.com. Inside of /server is the Express back-end, and inside of /client is the React front-end. Please keep in mind that although everything is Typescript, I am still in the process of learning and converting the project.
 
