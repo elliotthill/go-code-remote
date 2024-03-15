@@ -201,9 +201,9 @@ export default function App() {
     <div>
       <CreateButton show={currentUser} />
       {/* Filters in a 4x2 grid */}
-      <div className="flex flex-row py-0">
+      <div className="flex flex-col lg:flex-row py-0">
 
-        <div className="basis-2/3">
+        <div className="basis-3/3 lg:basis-2/3">
           Role / Company / Tech Search
           <div className="w-full">
             <input name="myInput" value={roleSearch}
@@ -214,7 +214,7 @@ export default function App() {
 
         <div className="basis-1/3">
           &nbsp;
-          <div className="pl-20 pt-2">
+          <div className="pl-20 pt-2 float-right lg:float-none">
             <ToggleSwitch
               label="Remote only"
               checked={remoteFilter}
@@ -223,7 +223,7 @@ export default function App() {
           </div>
         </div>
 
-        <div className="basis-1/3">
+        <div className="basis-1/3 pb-6 lg:pb-0">
           Location
           <div className="w-4/4">
             <Select
@@ -239,10 +239,13 @@ export default function App() {
         </div>
       </div>
 
-      <div className={` ${showMore ? 'hidden' : 'show'}`}>
-        <button className="pt-4 w-full text-slate-500 focus:outline-none focus:text-slate-700 text-right"
-                onClick={toggleShowMore}>Show more filters</button>
+      <div className="hidden lg:block">
+        <div className={` ${showMore ? 'hidden' : 'show'}`}>
+          <button className="pt-4 w-full text-slate-500 focus:outline-none focus:text-slate-700 text-right"
+                  onClick={toggleShowMore}>Show more filters</button>
+        </div>
       </div>
+
 
 
 
@@ -284,23 +287,23 @@ export default function App() {
       </div>
 
 
-      <div className="flex flex-row py-4">
-        <table className="table-fixed min-w-full bg-white shadow-md rounded-xl py-6">
+      <div className="flex flex-row py-4 overflow-x-scroll pt-4 md:pt-6 lg:pt-12">
+        <table className="table-fixed w-full lg:min-w-full bg-white shadow-md rounded-xl py-6">
           <thead>
             <tr>
-              <th className="w-5/12 rounded-lg px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-400 uppercase border-b border-gray-200 bg-gray-50">
+              <th className="md:w-5/12 rounded-lg px-3 lg:px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-400 uppercase border-b border-gray-200 bg-gray-50">
                 Role
               </th>
-              <th className="rounded-lg px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-400 uppercase border-b border-gray-200 bg-gray-50">
+              <th className="hidden lg:table-cell rounded-lg px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-400 uppercase border-b border-gray-200 bg-gray-50">
                 Company
               </th>
-              <th className="rounded-lg px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-400 uppercase border-b border-gray-200 bg-gray-50">
+              <th className="hidden lg:table-cell rounded-lg px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-400 uppercase border-b border-gray-200 bg-gray-50">
                 Location
               </th>
-              <th className="rounded-lg px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-400 uppercase border-b border-gray-200 bg-gray-50">
+              <th className="hidden lg:table-cell rounded-lg px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-400 uppercase border-b border-gray-200 bg-gray-50">
                 Base
               </th>
-              <th className="rounded-lg px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-400 uppercase border-b border-gray-200 bg-gray-50">
+              <th className="hidden lg:table-cell rounded-lg px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-400 uppercase border-b border-gray-200 bg-gray-50">
 
               </th>
             </tr>
@@ -310,19 +313,32 @@ export default function App() {
               {jobs.map(job => {
                 return (
                   <tr className="border-b border-blue-gray-200 hover:bg-gray-50 cursor-pointer" key={job.id}>
-                    <td className="py-3 px-6 w-5/12 h-[100px]" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
-                      <div className="block absolute mt-[-15px] text-xs text-gray-400 capitalize">
+                    <td className="py-3 px-3 lg:px-6 w-auto lg:w-5/12 h-auto lg:h-[100px]" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
+                      <div className="absolute mt-[-15px] text-xs text-gray-400 capitalize hidden lg:block">
                         {job.experience}
                       </div>
                       <div className="text-lg">
                         {job.role}
-                        <div className="text-stone-400 capitalize pl-4 inline-block">
+                        <span className="inline-block lg:hidden float-right">
+                          <RemoteLabel remote={job.remote} country={job.country}/>
+                        </span>
+
+                        <div className="hidden lg:inline-block text-stone-400 capitalize pl-4 inline-block">
                           {job.type !== 'permanent' && job.type}
                         </div>
 
-                        <div className="pl-4 inline-block underline text-xs text-blue-600 hover:text-blue-800 visited:text-purple-600" onClick={()=> window.open(job.careers_page+"?utm_source=jobstack.com", "_blank")}>
+                        <div className="hidden lg:inline-block pl-4 inline-block underline text-xs text-blue-600 hover:text-blue-800 visited:text-purple-600" onClick={()=> window.open(job.careers_page+"?utm_source=jobstack.com", "_blank")}>
                           {!!job.more_jobs && `+ ${job.more_jobs} similar jobs`}
                         </div>
+                      </div>
+
+                      <div className="block lg:hidden py-2 mb-2 w-12/12 text-gray-400">
+                        <span className="text-md font-bold">@ </span>
+
+                        <span className="text-sm">
+                          {job.company} {job.location}, {job.state ? job.state: job.country}
+                        </span>
+
                       </div>
 
                       {job.meta.map(meta=>{
@@ -332,13 +348,14 @@ export default function App() {
                           </span>
                         );
                       })}
-                      <div className="block absolute mt-[4px] text-xs text-gray-400">
+
+                      <div className="block absolute right-[20px] lg:right-auto mt-[-60px] lg:mt-[4px] text-xs text-gray-400">
                         {!!job.days_old && `${job.days_old}d`}
                         {job.days_old === 0 && `Today`}
                       </div>
 
                     </td>
-                    <td className="py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
+                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
                       <div className="text-lg">
                         {job.company}
                       </div>
@@ -357,7 +374,7 @@ export default function App() {
                         );
                       })}
                     </td>
-                    <td className="py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
+                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
                         <div>
                           {job.location}, {job.state ? job.state: job.country}
                         </div>
@@ -367,12 +384,12 @@ export default function App() {
 
                         <RemoteLabel remote={job.remote} country={job.country}/>
                     </td>
-                    <td className="py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
+                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
                       {!!job.rate && job.currency}
                       {!!job.rate && job.rate.toLocaleString()}
 
                     </td>
-                    <td className="py-3 px-6">
+                    <td className="hidden lg:table-cell py-3 px-6">
 
                       <AdminButton show={currentUser} job_id={job.id}/>
 
