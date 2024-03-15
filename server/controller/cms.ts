@@ -21,7 +21,7 @@ router.get('/job/:job', async function(req, res, next) {
     let job = await models.sequelize.query(" \
         SELECT job.id, role.role as role, company.`company` as company, location.location as location, \
         created, updated, job.source_url as source_url, job.type as type, job.rate as rate, job.title as title,\
-        job.remote as remote, job.more_jobs as more_jobs\
+        job.remote as remote, job.more_jobs as more_jobs, job.experience as experience\
         FROM job\
         LEFT JOIN company ON job.company_id = company.id\
         LEFT JOIN location ON job.location_id = location.id\
@@ -73,6 +73,7 @@ router.post('/job', async function(req, res) {
     let title = req.body.title;
     let remote = req.body.remote.value;
     let more_jobs = req.body.more_jobs;
+    let experience = req.body.experience.value;
 
     if (!title)
         title = role;
@@ -119,7 +120,7 @@ router.post('/job', async function(req, res) {
      * Job Insert
      */
     let result = await models.sequelize.query(" \
-        INSERT INTO job (company_id, location_id, role_id, source_url, type, rate, title, remote, search_keywords, more_jobs, created, updated)\
+        INSERT INTO job (company_id, location_id, role_id, source_url, type, rate, title, remote, search_keywords, more_jobs, experience, created, updated)\
         VALUES(:company_id, \
         :location_id, \
         :role_id, \
@@ -130,10 +131,11 @@ router.post('/job', async function(req, res) {
         :remote,\
         :search_keywords,\
         :more_jobs,\
+        :experience,\
         NOW(), NOW())\
         ON DUPLICATE KEY UPDATE updated=NOW(), type=VALUES(type), rate=VALUES(rate),\
         title=VALUES(title), source_url=VALUES(source_url), search_keywords=VALUES(search_keywords),\
-        remote=VALUES(remote), more_jobs=VALUES(more_jobs)\
+        remote=VALUES(remote), more_jobs=VALUES(more_jobs), experience=VALUES(experience)\
         ", {
         replacements: {
             role_id: role_id,
@@ -145,7 +147,8 @@ router.post('/job', async function(req, res) {
             title: title,
             remote: remote,
             search_keywords: search_keywords,
-            more_jobs: more_jobs
+            more_jobs: more_jobs,
+            experience: experience
         },
         type: models.sequelize.QueryTypes.INSERT
     })

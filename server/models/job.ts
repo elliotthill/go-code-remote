@@ -64,6 +64,11 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.ENUM('live', 'draft', 'trashed'),
             allowNull: false,
             defaultValue: 'live'
+        },
+        experience: {
+            type: DataTypes.ENUM('entry', 'mid', 'senior'),
+            allowNull: false,
+            defaultValue: 'mid'
         }
 
     }, {

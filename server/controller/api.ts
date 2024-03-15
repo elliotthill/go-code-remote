@@ -17,29 +17,38 @@ router.get('/', function(req, res, next) {
 
 router.get('/jobs', async function(req, res, next) {
 
-    let SqlString = require('sequelize/lib/sql-string');
+    const SqlString = require('sequelize/lib/sql-string');
 
-    let location_param = req.query.location;    //Value Label pair
-    let role_param = req.query.role;            //String
-    let role_param_like = '';
+    const location_param = req.query.location;    //Value Label pair
+    const role_param = req.query.role;            //String
+    const remote_param = req.query.remote;
+    const sort = req.query.sort;
 
+    
     let where_clause = "";
+    let role_param_like = '';
+    let order_clause = "created DESC, id DESC";
 
+    /*
+     * Order options
+     */
+    if (sort === 'money') {
+        order_clause = "rate DESC"
+    }
+    else if (sort === 'rating') {
+        order_clause = "company.glassdoor DESC"
+    }
+
+
+
+    /*
+     * Location filtering
+     */
     if (location_param && location_param != 1000) {
 
-        where_clause = " AND location.id = :location_id ";//" + SqlString.escape(location_param);
+        where_clause = " AND location.id = :location_id ";
 
-        //Remote, Anywhere
-        if (location_param == 1) {
-            where_clause = " AND job.remote = 'remote' ";
-        }
-
-        // Remote, US
-        //Here we filter location=US and remote OR remoteUS
-        if (location_param == 17) {
-            where_clause = " AND location.country = 'US' AND (job.remote = 'remote domestic' OR job.remote = 'remote') ";
-        }
-        else if (location_param == 999) {
+        if (location_param == 999) {
             where_clause = " AND location.country = 'US' ";
         }
         else if (location_param == 998) {
@@ -48,10 +57,44 @@ router.get('/jobs', async function(req, res, next) {
 
     }
 
+    /*
+     * Remote only checkbox
+     */
+    if (remote_param) {
+        where_clause += " AND (job.remote = 'remote' OR job.remote = 'remote domestic') ";
+    }
+
+    /*
+     * The text search
+     *
+     * This is the big one to get right, it needs improvement. Probably requires some kind of proper
+     * full text index.
+     */
     if (role_param) {
         where_clause += " AND (MATCH(search_keywords) AGAINST(:role_param IN NATURAL LANGUAGE MODE) OR search_keywords LIKE :role_param_like)";
         role_param_like = `%${role_param}%`;
     }
+
+    /*
+     * Experience options
+     */
+    const senior_filter = req.query.senior;
+    const mid_filter = req.query.mid;
+    const entry_filter = req.query.entry;
+
+    let exp_filters = [];
+
+    if (senior_filter)
+        exp_filters.push("'senior'")
+    if (mid_filter)
+        exp_filters.push("'mid'")
+    if (entry_filter)
+        exp_filters.push("'entry'")
+    
+    if (exp_filters.length > 0) {
+        where_clause += ` AND job.experience IN(${exp_filters.join(',')}) `;
+    }
+
 
 
     /*
@@ -71,7 +114,7 @@ router.get('/jobs', async function(req, res, next) {
      * so we use sequelize.escape() for those parts of the queries that contain data from the client
      */
     let jobs = await models.sequelize.query(` 
-        SELECT job.id, role.role as role, company.company as company, location.location as location, 
+        SELECT job.id, role.role as role, company.company as company, location.location as location, job.experience as experience,
         created, updated, job.source_url as source_url, job.type as type, job.rate as rate, count(DISTINCT job.id)-1 as other_locations,
         CONCAT(\
           '[',\
@@ -91,7 +134,7 @@ router.get('/jobs', async function(req, res, next) {
         LEFT JOIN meta ON job_meta.meta_id = meta.id
         WHERE status='live' ${where_clause}
         GROUP BY job.role_id, job.company_id
-        ORDER BY created DESC, id DESC
+        ORDER BY ${order_clause}
         LIMIT :posts_per_page OFFSET :offset
         `, {
         replacements: {

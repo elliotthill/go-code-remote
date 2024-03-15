@@ -9,6 +9,7 @@ import LangOptions from './data/lang.js';
 import FrameworkOptions from './data/framework.js';
 import TypeOptions from  './data/type.js';
 import OtherOptions from './data/other.js';
+import {ExperienceOptions, ExperienceLookup} from "./data/filter-options.js";
 
 import AlertError from "./ui/alert-error.js";
 import AlertNotice from "./ui/alert-notice.js";
@@ -50,6 +51,11 @@ export default function Admin() {
     label: string;
   }> | null>(RemoteOptions[3]);
 
+  const [experienceOption, setExperienceOption] = useState<SingleValue<{
+    value: string;
+    label: string;
+  }> | null>(ExperienceOptions[1]);
+
   /*
    * Get the ID
    */
@@ -86,6 +92,7 @@ export default function Admin() {
         setSourceURL(job.source_url);
         setRate(job.rate);
         setMoreJobs(job.more_jobs);
+        setExperienceOption(ExperienceOptions[ExperienceLookup[job.experience]]);
 
         setMetaOptions(data.meta);
 
@@ -135,6 +142,7 @@ export default function Admin() {
     if (!remoteOption)
       setError("Please specify remote or in office");
 
+
     if (!title) {
       setTitle(role)
     }
@@ -158,7 +166,8 @@ export default function Admin() {
         'rate': rate,
         'title': title,
         'remote': remoteOption,
-        'more_jobs': moreJobs
+        'more_jobs': moreJobs,
+        'experience': experienceOption
       }),
     });
 
@@ -312,6 +321,22 @@ export default function Admin() {
           </div>
         </div>
       </div>
+      <div className="flex flex-row py-6">
+        <div className="basis-1/3">
+          Experience
+
+          <div className="w-3/4">
+            <Select name="colors"
+                    options={ExperienceOptions}
+                    className="basic-single-select"
+                    classNamePrefix="select"
+                    onChange={setExperienceOption}
+                    value={experienceOption}
+            />
+          </div>
+        </div>
+      </div>
+
       <div className="flex flex-row pt-6">
         Source URL
       </div>
@@ -330,6 +355,8 @@ export default function Admin() {
           Save Job
         </button>
       </div>
+
+
 
       <div className="flex flex-row py-6">
         Locations:

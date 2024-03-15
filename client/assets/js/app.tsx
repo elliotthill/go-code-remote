@@ -1,15 +1,11 @@
 import React, {Fragment, useState, useEffect, useRef, useContext} from "react";
 
 import Select, { MultiValue, SingleValue } from "react-select";
-
+import {ToggleSwitch} from 'flowbite-react';
 
 // Load the filtering options
-import RemoteOptions from './data/remote.js';
-import InfraOptions from './data/infra.js';
-import LangOptions from './data/lang.js';
-import FrameworkOptions from './data/framework.js';
-import OtherOptions from './data/other.js';
 import LocationOptions from './data/location.js';
+import {SortOptions, ExperienceOptions} from "./data/filter-options.js";
 
 import AdminButton, {CreateButton} from "./admin-button.js";
 import RemoteLabel from "./ui/remote-label.js";
@@ -27,55 +23,56 @@ export default function App() {
   const [pageReady, setPageReady] = useState(false);
 
   const [showAdmin, setShowAdmin] = useState(false);
+  const [showMore, setShowMore] = useState(false);
 
-  const MetaOptions = [...RemoteOptions, ...InfraOptions, ...LangOptions, ...FrameworkOptions, ...OtherOptions];
+  const [remoteFilter, setRemoteFilter] = useState(false);
+
+
+
   /*
-   * Filter Setters
+   * Filter and Sorts
    */
-  const [langOptions, setLangOptions] = useState<MultiValue<{
-    value: string;
-    label: string;
-  }> | null>(null);
-
-  const [infraOptions, setInfraOptions] = useState<MultiValue<{
-    value: string;
-    label: string;
-  }> | null>(null);
-
-  const [frameworkOptions, setFrameworkOptions] = useState<MultiValue<{
-    value: string;
-    label: string;
-  }> | null>(null);
-
-  const [metaOptions, setMetaOptions] = useState<MultiValue<{
-    value: string;
-    label: string;
-  }> | null>(null);
-
   const [locationOptions, setLocationOptions] = useState<SingleValue<{
     value: string;
     label: string;
   }> | null>(null);
 
+  const [experienceFilter, setExperienceFilter] = useState<MultiValue<{
+    value: string;
+    label: string;
+  }> | null>(null);
+
+  const [sortOption, setSortOption] = useState<SingleValue<{
+    value: string;
+    label: string;
+  }> | null>(SortOptions[0]);
+  
+
 
   /*
-   * Get an initial data set from the server
+   * Route load
    */
   useEffect(() => {
 
-
     setPageReady(true);
-    //setRemoteOptions(RemoteDefault);
+
   }, []);
 
 
 
-  //For a new search/filter
+  /*
+   * Returns a fresh set of results
+   *
+   * The idea here is to wipe whatever jobs are currently loaded and get the 1st page of the
+   * current filtering options. This is done when the route loads, and when filters are changed.
+   */
   function getJobs() {
 
     console.info("Loading the first page");
 
-    //Only load the first page once when page is first loaded
+    /*
+     * Defensive code: make sure we only load the first page once
+     */
     if (page == 1 && jobs && jobs.length > 0 && !pageReady) {
       console.warn("Stopped requesting the same page again");
       return;
@@ -87,15 +84,14 @@ export default function App() {
      * Here we build the GET querystring
      *
      * There probably is a better way of doing this
+     *
+     * @TODO Remove this duplicated code from getJobsNextPage()
+     *   move to its own function
      */
-    let jobs_params = '&p=1';
-    if (locationOptions)
-      jobs_params += `&location=${locationOptions?.value}`;
 
-    if (roleSearch)
-      jobs_params += `&role=${roleSearch}`;
+    let qs = buildQueryString(1, locationOptions, roleSearch, remoteFilter, experienceFilter, sortOption);
 
-    fetch(`/api/jobs?v=1${jobs_params}`)
+    fetch(`/api/jobs?v=1${qs}`)
       .then(response => response.json())
       .then(data => {
         setJobs(data);
@@ -105,7 +101,10 @@ export default function App() {
 
   }
 
-  //Get the next page of the existing filter/search
+
+  /*
+   * Get the next page of the existing filter/search
+   */
   function getJobsNextPage() {
 
     if (page === 1)
@@ -113,6 +112,22 @@ export default function App() {
 
     if (infinite_loading.current)
       return;
+
+    let qs = buildQueryString(page, locationOptions, roleSearch, remoteFilter, experienceFilter, sortOption);
+
+    infinite_loading.current = true;
+
+    fetch(`/api/jobs?v=1${qs}`)
+      .then(response => response.json())
+      .then(data => {
+        setJobs(jobs.concat(data)); //Merge the new list of jobs with the old
+        infinite_loading.current = false;
+      })
+      .catch(error => console.error(error));
+
+  }
+
+  function buildQueryString(page, locationOptions, roleSearch, remoteFilter, experienceFilter, sortOption):string {
 
     let jobs_params = `&p=${page}`;
 
@@ -122,15 +137,21 @@ export default function App() {
     if (roleSearch)
       jobs_params += `&role=${roleSearch}`;
 
-    infinite_loading.current = true;
+    if (remoteFilter)
+      jobs_params += `&remote=${remoteFilter}`;
 
-    fetch(`/api/jobs?v=1${jobs_params}`)
-      .then(response => response.json())
-      .then(data => {
-        setJobs(jobs.concat(data)); //Merge the new list of jobs with the old
-        infinite_loading.current = false;
+    if (experienceFilter) {
+      experienceFilter.map((exp) => {
+        jobs_params += `&${exp.value}=true`;
       })
-      .catch(error => console.error(error));
+
+    }
+
+
+    if (sortOption)
+      jobs_params += `&sort=${sortOption.value}`
+
+    return jobs_params;
 
   }
 
@@ -161,7 +182,7 @@ export default function App() {
    */
   useEffect(() => {
     getJobs();
-  }, [locationOptions, roleSearch]);
+  }, [locationOptions, roleSearch, remoteFilter, experienceFilter, sortOption]);
 
   /*
    * Get the next page
@@ -172,6 +193,9 @@ export default function App() {
     getJobsNextPage();
   }, [page]);
 
+  function toggleShowMore() {
+    setShowMore(!showMore);
+  }
 
   return (
     <div>
@@ -181,18 +205,29 @@ export default function App() {
 
         <div className="basis-2/3">
           Role / Company / Tech Search
-          <div className="w-full pr-32">
+          <div className="w-full">
             <input name="myInput" value={roleSearch}
                    onChange={(event) => {setRoleSearch(event.target.value)}}
                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none text-xl"/>
           </div>
         </div>
 
-        <div className="basis-1/3 pl-32">
+        <div className="basis-1/3">
+          &nbsp;
+          <div className="pl-20 pt-2">
+            <ToggleSwitch
+              label="Remote only"
+              checked={remoteFilter}
+              onChange={setRemoteFilter}
+            />
+          </div>
+        </div>
+
+        <div className="basis-1/3">
           Location
           <div className="w-4/4">
             <Select
-              name="colors"
+              name="location"
               options={LocationOptions}
               className="basic-multi-select text-xl"
               classNamePrefix="select"
@@ -204,22 +239,61 @@ export default function App() {
         </div>
       </div>
 
+      <div className={` ${showMore ? 'hidden' : 'show'}`}>
+        <button className="pt-4 w-full text-slate-500 focus:outline-none focus:text-slate-700 text-right"
+                onClick={toggleShowMore}>Show more filters</button>
+      </div>
 
 
-      <div className="flex flex-row py-12">
+
+
+      <div className={`flex flex-row pt-8 pb-2 ${showMore ? 'show' : 'hidden'}`}>
+        <div className="basis-3/5">
+        </div>
+        <div className="basis-1/5">
+          Experience
+          <div className="w-4/4 pr-8">
+            <Select
+              isMulti
+              name="colors"
+              options={ExperienceOptions}
+              className="basic-multi-select"
+              classNamePrefix="select"
+              onChange={setExperienceFilter}
+              value={experienceFilter}
+            />
+          </div>
+        </div>
+        <div className="basis-1/5  pl-8">
+          Sort
+          <div className="w-4/4">
+            <Select
+              name="colors"
+              options={SortOptions}
+              className="basic-single-select"
+              classNamePrefix="select"
+              onChange={setSortOption}
+              value={sortOption}
+            />
+          </div>
+        </div>
+      </div>
+      <div className={`py-2 ${showMore ? 'show' : 'hidden'}`}>
+        <button className="w-full text-slate-500 focus:outline-none focus:text-slate-700 text-right"
+                onClick={toggleShowMore}>Show less</button>
+      </div>
+
+
+      <div className="flex flex-row py-4">
         <table className="table-fixed min-w-full bg-white shadow-md rounded-xl py-6">
           <thead>
             <tr>
               <th className="w-5/12 rounded-lg px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-400 uppercase border-b border-gray-200 bg-gray-50">
                 Role
               </th>
-
-
               <th className="rounded-lg px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-400 uppercase border-b border-gray-200 bg-gray-50">
                 Company
               </th>
-
-
               <th className="rounded-lg px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-400 uppercase border-b border-gray-200 bg-gray-50">
                 Location
               </th>
@@ -236,12 +310,16 @@ export default function App() {
               {jobs.map(job => {
                 return (
                   <tr className="border-b border-blue-gray-200 hover:bg-gray-50 cursor-pointer" key={job.id}>
-                    <td className="py-3 px-4 w-5/12 h-[100px]" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
+                    <td className="py-3 px-6 w-5/12 h-[100px]" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
+                      <div className="block absolute mt-[-15px] text-xs text-gray-400 capitalize">
+                        {job.experience}
+                      </div>
                       <div className="text-lg">
                         {job.role}
                         <div className="text-stone-400 capitalize pl-4 inline-block">
                           {job.type !== 'permanent' && job.type}
                         </div>
+
                         <div className="pl-4 inline-block underline text-xs text-blue-600 hover:text-blue-800 visited:text-purple-600" onClick={()=> window.open(job.careers_page+"?utm_source=jobstack.com", "_blank")}>
                           {!!job.more_jobs && `+ ${job.more_jobs} similar jobs`}
                         </div>
@@ -258,16 +336,17 @@ export default function App() {
                         {!!job.days_old && `${job.days_old}d`}
                         {job.days_old === 0 && `Today`}
                       </div>
+
                     </td>
-                    <td className="py-3 px-4" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
+                    <td className="py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
                       <div className="text-lg">
                         {job.company}
                       </div>
                       <a href="https://www.glassdoor.com/?utm_source=jobstack.com" rel="noindex nofollow" target="_blank">
-                        <div className="text-xs text-gray-400">Glassdoor <span className="font-semibold ml-12">{job.glassdoor}</span></div>
+                        <div className="text-xs text-gray-400">Glassdoor <span className="font-semibold ml-8">{job.glassdoor}</span></div>
                       </a>
                       <a href="https://www.indeed.com/?utm_source=jobstack.com" rel="noindex nofollow" target="_blank">
-                        <div className="text-xs text-gray-400">Indeed <span className="font-semibold ml-16">{job.indeed}</span></div>
+                        <div className="text-xs text-gray-400">Indeed <span className="font-semibold ml-12">{job.indeed}</span></div>
                       </a>
 
                       {job.company_meta.map(meta=>{
@@ -278,7 +357,7 @@ export default function App() {
                         );
                       })}
                     </td>
-                    <td className="py-3 px-4" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
+                    <td className="py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
                         <div>
                           {job.location}, {job.state ? job.state: job.country}
                         </div>
@@ -288,12 +367,12 @@ export default function App() {
 
                         <RemoteLabel remote={job.remote} country={job.country}/>
                     </td>
-                    <td className="py-3 px-4" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
+                    <td className="py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
                       {!!job.rate && job.currency}
                       {!!job.rate && job.rate.toLocaleString()}
 
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-6">
 
                       <AdminButton show={currentUser} job_id={job.id}/>
 
