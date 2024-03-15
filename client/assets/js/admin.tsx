@@ -124,31 +124,40 @@ export default function Admin() {
     setError(null);
     setNotice(null);
 
-    if (!role)
+    if (!role) {
       setError("Please provide a role");
+      return;
+    }
 
-    if (!company)
+    if (!company) {
       setError("Please provide a company");
+      return;
+    }
 
-    if (!location)
+    if (!location) {
       setError("Please provide a company");
+      return;
+    }
 
-    if (!typeOption)
+    if (!typeOption) {
       setError("Please enter either Permanent or Contract");
-
-    if (!sourceURL)
+      return;
+    }
+    if (!sourceURL) {
       setError("Please enter a source url");
+      return;
+    }
 
-    if (!remoteOption)
+    if (!remoteOption) {
       setError("Please specify remote or in office");
-
+      return;
+    }
 
     if (!title) {
       setTitle(role)
     }
 
-    if (error)
-      return;
+
 
     const response = await fetch('/api/cms/job', {
       method: "POST",

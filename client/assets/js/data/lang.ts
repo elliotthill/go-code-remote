@@ -22,6 +22,7 @@ const LangOptions = [
     { value: 56, label: "Ruby" },
     { value: 66, label: "OOP" },
     { value: 73, label: "Scripting" },
+    { value: 79, label: "Erlang" },
 ];
 
 export default LangOptions;

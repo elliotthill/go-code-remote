@@ -1,8 +1,8 @@
 
 
 const LocationOptions = [
-    { value: 1000, label: 'Global' },
-    { value: 1, label: "Remote Only" },
+    { value: 1000, label: '-' },
+    //{ value: 1, label: "Remote Only" },
     //{ value: 17, label: "Remote, US based" },
     { value: 999, label: "US" },
     { value: 998, label: "UK" },
@@ -20,6 +20,7 @@ const LocationOptions = [
     { value: 15, label: "Austin, TX" },
     { value: 16, label: "Boston, MA" },
     { value: 2, label: "London, UK" },
+
 ];
 
 

@@ -21,6 +21,9 @@ const FrameworkOptions = [
     { value: 58, label: "Laravel" },
     { value: 63, label: "Angular" },
     { value: 74, label: "Electron.js" },
+    { value: 76, label: "Ruby on Rails" },
+    { value: 77, label: "iOS SDK" },
+    { value: 78, label: "Android SDK" },
 ];
 
 export default FrameworkOptions;
