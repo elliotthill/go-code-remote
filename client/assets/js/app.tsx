@@ -224,7 +224,7 @@ export default function App() {
         <div className="basis-3/3 lg:basis-2/3">
           Role / Company / Tech Search
           <div className="w-full">
-            <input name="myInput" value={roleSearch} placeholder=""
+            <input name="myInput" value={roleSearch} placeholder="'Python' or 'Devops' or 'AWS'..." autoComplete="off"
                    onChange={(e) => {
                      setRoleSearch(e.target.value);
                    }}

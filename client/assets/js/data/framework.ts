@@ -24,6 +24,7 @@ const FrameworkOptions = [
     { value: 76, label: "Ruby on Rails" },
     { value: 77, label: "iOS SDK" },
     { value: 78, label: "Android SDK" },
+    { value: 80, label: "PyTorch" },
 ];
 
 export default FrameworkOptions;

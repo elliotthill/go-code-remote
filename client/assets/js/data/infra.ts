@@ -9,6 +9,7 @@ const InfraOptions = [
     { value: 62, label: "Database Wizard" },
     { value: 69, label: "Container Mgmt" },
     { value: 70, label: "Container Orchestration" },
+    { value: 81, label: "Terraform" },
 ];
 
 export default InfraOptions;

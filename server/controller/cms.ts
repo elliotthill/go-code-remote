@@ -230,6 +230,32 @@ router.post('/job/:job/delete', async function(req, res, next){
 
 });
 
+router.post('/job/check-duplicates', async (req, res, next) => {
+
+    if (!req.isAuthenticated()) {
+        res.status(500).json({'meta': {'status': 'error', 'error': 'Permission denied'}});
+        return;
+    }
+
+    const source_url = req.body.source_url;
+
+    let result = await models.sequelize.query(`
+        SELECT COUNT(*) as duplicates
+        FROM job
+        WHERE source_url=:source_url
+        `, {
+        replacements: {
+            source_url: source_url
+        },
+        plain: true,
+        type: models.sequelize.QueryTypes.SELECT
+    });
+
+
+    res.json(result);
+
+});
+
 /*
  * Get the other locations available for this job
  */
@@ -266,6 +292,9 @@ router.get('/job/other-locations/:job', async function(req, res, next) {
     res.json({"jobs":jobs});
 
 });
+
+
+
 
 
 module.exports = router;

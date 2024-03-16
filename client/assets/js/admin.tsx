@@ -192,6 +192,43 @@ export default function Admin() {
 
   }
 
+  /*
+   * Check for duplicate source urls
+   */
+
+  useEffect(() => {
+
+
+    if (!sourceURL)
+      return;
+
+    //Dont dupe check existing posts
+    if (id)
+      return;
+
+    const checkDuplicates = async () => {
+
+      const response = await fetch('/api/cms/job/check-duplicates', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          'source_url': sourceURL,
+        }),
+      });
+      const response_json = await response.json()
+
+      if (response_json.duplicates !== 0) {
+        setError('Duplicate Job Source')
+      }
+    }
+
+    checkDuplicates();
+
+
+  }, [sourceURL]);
+
   async function remove(){
 
     const response = await fetch(`/api/cms/job/${id}/delete`, {
