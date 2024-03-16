@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
-    mode: "development",
+    mode: "production",
     entry: './client/assets/js/index.js',
     output: {
         path: path.join(__dirname, 'client/dist'),

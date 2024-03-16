@@ -10,6 +10,9 @@ const InfraOptions = [
     { value: 69, label: "Container Mgmt" },
     { value: 70, label: "Container Orchestration" },
     { value: 81, label: "Terraform" },
+    { value: 82, label: "Redis" },
+    { value: 83, label: "DynamoDB" },
+    { value: 84, label: "Redshift" },
 ];
 
 export default InfraOptions;

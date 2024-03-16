@@ -166,6 +166,23 @@ router.get('/jobs', async function(req, res, next) {
             job.company_meta = JSON.parse(job.company_meta)
         else
             job.company_meta = [];
+
+        try {
+            let outbound_url = new URL(job.source_url);
+            outbound_url.searchParams.append('utm_source', "gocoderemote.com");
+            job.source_url = outbound_url.toString();
+        } catch (e) {
+            //URL was bad or null, we don't care
+        }
+
+        try {
+            let outbound_careers = new URL(job.careers_page);
+            outbound_careers.searchParams.append('utm_source', "gocoderemote.com");
+            job.careers_page = outbound_careers.toString();
+        } catch (e) {
+            //URL was bad or null, we don't care
+        }
+
     })
 
     res.json(jobs);

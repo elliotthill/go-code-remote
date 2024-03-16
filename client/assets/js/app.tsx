@@ -315,7 +315,7 @@ export default function App() {
               {jobs.map(job => {
                 return (
                   <tr className="border-b border-blue-gray-200 hover:bg-gray-50 cursor-pointer" key={job.id}>
-                    <td className="py-3 px-3 lg:px-6 w-auto lg:w-5/12 h-auto lg:h-[100px]" onClick={()=> window.open(job.source_url+"?utm_source=gocoderemote.com", "_blank")}>
+                    <td className="py-3 px-3 lg:px-6 w-auto lg:w-5/12 h-auto lg:h-[100px]" onClick={()=> window.open(job.source_url, "_blank")}>
                       <div className="absolute mt-[-15px] text-xs text-gray-400 capitalize hidden lg:block">
                         {job.experience}
                       </div>
@@ -329,7 +329,7 @@ export default function App() {
                           {job.type !== 'permanent' && job.type}
                         </div>
 
-                        <div className="hidden lg:inline-block pl-4 inline-block underline text-xs text-blue-600 hover:text-blue-800 visited:text-purple-600" onClick={()=> window.open(job.careers_page+"?utm_source=gocoderemote.com", "_blank")}>
+                        <div className="hidden lg:inline-block pl-4 inline-block underline text-xs text-blue-600 hover:text-blue-800 visited:text-purple-600" onClick={()=> window.open(job.careers_page, "_blank")}>
                           {!!job.more_jobs && `+ ${job.more_jobs} similar jobs`}
                         </div>
                       </div>
@@ -357,7 +357,7 @@ export default function App() {
                       </div>
 
                     </td>
-                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=gocoderemote.com", "_blank")}>
+                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url, "_blank")}>
                       <div className="text-lg">
                         {job.company}
                       </div>
@@ -376,7 +376,7 @@ export default function App() {
                         );
                       })}
                     </td>
-                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=gocoderemote.com", "_blank")}>
+                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url, "_blank")}>
                         <div>
                           {job.location}, {job.state ? job.state: job.country}
                         </div>
@@ -386,7 +386,7 @@ export default function App() {
 
                         <RemoteLabel remote={job.remote} country={job.country}/>
                     </td>
-                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=gocoderemote.com", "_blank")}>
+                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url, "_blank")}>
                       {!!job.rate && job.currency}
                       {!!job.rate && job.rate.toLocaleString()}
 
@@ -396,7 +396,7 @@ export default function App() {
                       <AdminButton show={currentUser} job_id={job.id}/>
 
                       <a type="submit" className="px-3 py-2 text-lg font-medium text-center text-white bg-gray-400 rounded-lg hover:bg-gray-500 focus:ring-4 focus:outline-none focus:ring-blue-300"
-                              href={job.source_url+"?utm_source=gocoderemote.com"} target="_blank" rel="noindex nofollow">Apply</a>
+                              href={job.source_url} target="_blank" rel="noindex nofollow">Apply</a>
                     </td>
                   </tr>
                 );
