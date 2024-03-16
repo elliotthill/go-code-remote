@@ -6,11 +6,10 @@ var models = require('../models/index');
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-    res.render("index", {title: 'GoCodeRemote', version: '3'}, function(err, list) {
+    res.render("index", {title: 'GoCodeRemote', version: '0.1'}, function(err, list) {
 
         res.send(list);
     });
-
 
 });
 
