@@ -1,30 +1,15 @@
-'use strict';
-
-var express = require('express');
-var router = express.Router();
-
-const models= require('../models/index');
+const models = require('../../models/index');
 const Sequelize = require("sequelize");
 
+async function jobController(req, res, next) {
 
-router.get('/', function(req, res, next) {
-    res.json({
-        meta: "success",
-        data: "hello world"
-    });
-});
-
-
-router.get('/jobs', async function(req, res, next) {
-
-    const SqlString = require('sequelize/lib/sql-string');
 
     const location_param = req.query.location;    //Value Label pair
     const role_param = req.query.role;            //String
     const remote_param = req.query.remote;
     const sort = req.query.sort;
 
-    
+
     let where_clause = "";
     let role_param_like = '';
     let order_clause = "created DESC, id DESC";
@@ -34,11 +19,9 @@ router.get('/jobs', async function(req, res, next) {
      */
     if (sort === 'money') {
         order_clause = "rate DESC"
-    }
-    else if (sort === 'rating') {
+    } else if (sort === 'rating') {
         order_clause = "company.glassdoor DESC"
     }
-
 
 
     /*
@@ -50,8 +33,7 @@ router.get('/jobs', async function(req, res, next) {
 
         if (location_param == 999) {
             where_clause = " AND location.country = 'US' ";
-        }
-        else if (location_param == 998) {
+        } else if (location_param == 998) {
             where_clause = " AND location.country = 'UK' ";
         }
 
@@ -90,11 +72,10 @@ router.get('/jobs', async function(req, res, next) {
         exp_filters.push("'mid'")
     if (entry_filter)
         exp_filters.push("'entry'")
-    
+
     if (exp_filters.length > 0) {
         where_clause += ` AND job.experience IN(${exp_filters.join(',')}) `;
     }
-
 
 
     /*
@@ -105,7 +86,7 @@ router.get('/jobs', async function(req, res, next) {
     let page = req.query.p ? req.query.p : 1;
     page = parseInt(page) || 0;
 
-    const offset = (page-1) * posts_per_page;
+    const offset = (page - 1) * posts_per_page;
 
     /*
      * Here we build the main jobs query
@@ -138,11 +119,11 @@ router.get('/jobs', async function(req, res, next) {
         LIMIT :posts_per_page OFFSET :offset
         `, {
         replacements: {
-            location_id:location_param,
-            role_param:role_param,
-            role_param_like:role_param_like,
-            posts_per_page:posts_per_page,
-            offset:offset
+            location_id: location_param,
+            role_param: role_param,
+            role_param_like: role_param_like,
+            posts_per_page: posts_per_page,
+            offset: offset
         },
         type: models.sequelize.QueryTypes.SELECT
     });
@@ -150,14 +131,15 @@ router.get('/jobs', async function(req, res, next) {
 
     /*
      * Parse it as JSON here, so Express can send it as JSON and not strings
+     *
      */
-    jobs.map(job=>{
+    jobs.map(job => {
 
         job.meta = JSON.parse(job.meta) //The meta becomes JSON instead of a string
 
         //We have to filter out NULL meta tags that MySQL outputs
         //We can't use IF() in MySQL because that causes malformed JSON in rare cases
-        job.meta = job.meta.filter(meta=>{
+        job.meta = job.meta.filter(meta => {
             return meta.value !== null;
         })
 
@@ -167,6 +149,7 @@ router.get('/jobs', async function(req, res, next) {
         else
             job.company_meta = [];
 
+        //Append utm_source=gocoderemote.com to job URL
         try {
             let outbound_url = new URL(job.source_url);
             outbound_url.searchParams.append('utm_source', "gocoderemote.com");
@@ -175,6 +158,7 @@ router.get('/jobs', async function(req, res, next) {
             //URL was bad or null, we don't care
         }
 
+        //Append utm_source=gocoderemote.com to careers page URL
         try {
             let outbound_careers = new URL(job.careers_page);
             outbound_careers.searchParams.append('utm_source', "gocoderemote.com");
@@ -186,8 +170,6 @@ router.get('/jobs', async function(req, res, next) {
     })
 
     res.json(jobs);
-});
+}
 
-
-
-module.exports = router;
+module.exports = {jobController}

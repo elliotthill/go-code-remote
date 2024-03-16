@@ -19,18 +19,18 @@ const passportConfig = require('./server/config/passport');
 
 
 //SPA entry
-const routes = require('./server/controller/index');
+const routes = require('./server/routes/index');
 //Public API
-const api = require('./server/controller/api');
+const job = require('./server/routes/job');
 
 //Auth API - MUST BE UNCACHED
-const user = require('./server/controller/user');
+const user = require('./server/routes/user');
 
 //CMS ADMIN API - MUST BE UNCACHED
-const cms = require('./server/controller/cms');
+const cms = require('./server/routes/cms');
 
 //Top secret API
-const admin = require('./server/controller/admin');
+const admin = require('./server/routes/admin');
 
 const app = express();
 
@@ -94,7 +94,7 @@ app.post('/api/user/login',
 
 app.use('/api/cms', cms);
 app.use('/api/user', user);
-app.use('/api', api);
+app.use('/api', job);
 
 
 app.get('/robots.txt', function (req: any, res: { type: (arg0: string) => void; send: (arg0: string) => void; }) {
