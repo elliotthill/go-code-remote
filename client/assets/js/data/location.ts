@@ -1,6 +1,7 @@
 
+import {ValueLabelId} from "../types/form.js";
 
-const LocationOptions = [
+const LocationOptions : ValueLabelId[]  = [
     { value: 1000, label: '-' },
     //{ value: 1, label: "Remote Only" },
     //{ value: 17, label: "Remote, US based" },

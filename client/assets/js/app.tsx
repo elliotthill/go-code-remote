@@ -12,40 +12,31 @@ import RemoteLabel from "./ui/remote-label.js";
 
 //Access user info
 import UserContext from './services/user-context.js';
+import {User} from './services/auth.js';
+import {ValueLabel,ValueLabelId} from "./types/form.js";
 
 export default function App() {
 
-  const {currentUser, setCurrentUser} = useContext(UserContext);
+
+  const {currentUser, setCurrentUser} = useContext<User | null>(UserContext);
   const [jobs, setJobs] = useState([]);
 
   const [roleSearch, setRoleSearch] = useState('');
   const [page, setPage] = useState(1);
   const [pageReady, setPageReady] = useState(false);
 
-  const [showAdmin, setShowAdmin] = useState(false);
   const [showMore, setShowMore] = useState(false);
 
-  const [remoteFilter, setRemoteFilter] = useState(false);
-
-
+  const [remoteFilter, setRemoteFilter] = useState<Boolean>(false);
 
   /*
    * Filter and Sorts
    */
-  const [locationOptions, setLocationOptions] = useState<SingleValue<{
-    value: string;
-    label: string;
-  }> | null>(null);
+  const [locationOptions, setLocationOptions] = useState<SingleValue<ValueLabelId> | null>(null);
 
-  const [experienceFilter, setExperienceFilter] = useState<MultiValue<{
-    value: string;
-    label: string;
-  }> | null>(null);
+  const [experienceFilter, setExperienceFilter] = useState<MultiValue<ValueLabel> | null>(null);
 
-  const [sortOption, setSortOption] = useState<SingleValue<{
-    value: string;
-    label: string;
-  }> | null>(SortOptions[0]);
+  const [sortOption, setSortOption] = useState<SingleValue<ValueLabel>>(SortOptions[0]);
   
 
 
@@ -127,7 +118,11 @@ export default function App() {
 
   }
 
-  function buildQueryString(page, locationOptions, roleSearch, remoteFilter, experienceFilter, sortOption):string {
+  /*
+   * Build a query string
+   */
+  function buildQueryString(page:number, locationOptions:ValueLabel, roleSearch:string,
+                            remoteFilter:boolean, experienceFilter:ValueLabel[], sortOption:ValueLabel):string {
 
     let jobs_params = `&p=${page}`;
 
@@ -144,7 +139,6 @@ export default function App() {
       experienceFilter.map((exp) => {
         jobs_params += `&${exp.value}=true`;
       })
-
     }
 
 
@@ -313,7 +307,7 @@ export default function App() {
               {jobs.map(job => {
                 return (
                   <tr className="border-b border-blue-gray-200 hover:bg-gray-50 cursor-pointer" key={job.id}>
-                    <td className="py-3 px-3 lg:px-6 w-auto lg:w-5/12 h-auto lg:h-[100px]" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
+                    <td className="py-3 px-3 lg:px-6 w-auto lg:w-5/12 h-auto lg:h-[100px]" onClick={()=> window.open(job.source_url+"?utm_source=gocoderemote.com", "_blank")}>
                       <div className="absolute mt-[-15px] text-xs text-gray-400 capitalize hidden lg:block">
                         {job.experience}
                       </div>
@@ -327,7 +321,7 @@ export default function App() {
                           {job.type !== 'permanent' && job.type}
                         </div>
 
-                        <div className="hidden lg:inline-block pl-4 inline-block underline text-xs text-blue-600 hover:text-blue-800 visited:text-purple-600" onClick={()=> window.open(job.careers_page+"?utm_source=jobstack.com", "_blank")}>
+                        <div className="hidden lg:inline-block pl-4 inline-block underline text-xs text-blue-600 hover:text-blue-800 visited:text-purple-600" onClick={()=> window.open(job.careers_page+"?utm_source=gocoderemote.com", "_blank")}>
                           {!!job.more_jobs && `+ ${job.more_jobs} similar jobs`}
                         </div>
                       </div>
@@ -355,14 +349,14 @@ export default function App() {
                       </div>
 
                     </td>
-                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
+                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=gocoderemote.com", "_blank")}>
                       <div className="text-lg">
                         {job.company}
                       </div>
-                      <a href="https://www.glassdoor.com/?utm_source=jobstack.com" rel="noindex nofollow" target="_blank">
+                      <a href="https://www.glassdoor.com/?utm_source=gocoderemote.com" rel="noindex nofollow" target="_blank">
                         <div className="text-xs text-gray-400">Glassdoor <span className="font-semibold ml-8">{job.glassdoor}</span></div>
                       </a>
-                      <a href="https://www.indeed.com/?utm_source=jobstack.com" rel="noindex nofollow" target="_blank">
+                      <a href="https://www.indeed.com/?utm_source=gocoderemote.com" rel="noindex nofollow" target="_blank">
                         <div className="text-xs text-gray-400">Indeed <span className="font-semibold ml-12">{job.indeed}</span></div>
                       </a>
 
@@ -374,7 +368,7 @@ export default function App() {
                         );
                       })}
                     </td>
-                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
+                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=gocoderemote.com", "_blank")}>
                         <div>
                           {job.location}, {job.state ? job.state: job.country}
                         </div>
@@ -384,7 +378,7 @@ export default function App() {
 
                         <RemoteLabel remote={job.remote} country={job.country}/>
                     </td>
-                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=jobstack.com", "_blank")}>
+                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url+"?utm_source=gocoderemote.com", "_blank")}>
                       {!!job.rate && job.currency}
                       {!!job.rate && job.rate.toLocaleString()}
 
@@ -394,7 +388,7 @@ export default function App() {
                       <AdminButton show={currentUser} job_id={job.id}/>
 
                       <a type="submit" className="px-3 py-2 text-lg font-medium text-center text-white bg-gray-400 rounded-lg hover:bg-gray-500 focus:ring-4 focus:outline-none focus:ring-blue-300"
-                              href={job.source_url+"?utm_source=jobstack.com"} target="_blank" rel="noindex nofollow">Apply</a>
+                              href={job.source_url+"?utm_source=gocoderemote.com"} target="_blank" rel="noindex nofollow">Apply</a>
                     </td>
                   </tr>
                 );

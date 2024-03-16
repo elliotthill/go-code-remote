@@ -1,0 +1,16 @@
+{
+  "extends": "@tsconfig/recommended/tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "resolveJsonModule": true,
+
+    "target": "es2016",
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "moduleDetection": "force" //Stop 'Cannot redeclare block-scoped variable' errors
+  },
+  "include": [
+    "server/**/*",
+    "app.ts"
+  ]
+}

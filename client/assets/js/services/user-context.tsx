@@ -1,21 +1,22 @@
 import React, { useState, useEffect, createContext } from 'react';
 import { Redirect } from 'react-router-dom';
-import { isAuthenticated } from './auth.js';
+import { isAuthenticated, User } from './auth.js';
 
 
-const UserContext = createContext(null);
+const UserContext = createContext<User>(null);
+
 
 export const UserProvider = ({ children }) => {
-  const  [currentUser, setCurrentUser] = useState(null);
+  const  [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
     const checkLoggedIn = async () => {
-      let cuser : {} | null = await isAuthenticated();
+      let cuser :User | null = await isAuthenticated();
 
       setCurrentUser(cuser);
     };
 
-    checkLoggedIn();
+    checkLoggedIn().then(r => {});
   }, []);
 
 
