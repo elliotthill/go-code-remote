@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom';
 import { isAuthenticated, User } from './auth.js';
 
 
-const UserContext = createContext<User>(null);
+const UserContext = createContext<User | null>(null);
 
 
 export const UserProvider = ({ children }) => {

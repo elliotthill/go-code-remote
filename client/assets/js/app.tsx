@@ -1,7 +1,8 @@
 import React, {Fragment, useState, useEffect, useRef, useContext} from "react";
 
+import { useDebounce } from 'use-debounce';
 import Select, { MultiValue, SingleValue } from "react-select";
-import {ToggleSwitch} from 'flowbite-react';
+import {Spinner, ToggleSwitch} from 'flowbite-react';
 
 // Load the filtering options
 import LocationOptions from './data/location.js';
@@ -9,25 +10,30 @@ import {SortOptions, ExperienceOptions} from "./data/filter-options.js";
 
 import AdminButton, {CreateButton} from "./admin-button.js";
 import RemoteLabel from "./ui/remote-label.js";
+import LoadingSpinner from "./ui/loading-spinner.js";
 
 //Access user info
 import UserContext from './services/user-context.js';
 import {User} from './services/auth.js';
 import {ValueLabel,ValueLabelId} from "./types/form.js";
+import {Job} from "./types/job.js";
 
 export default function App() {
 
 
   const {currentUser, setCurrentUser} = useContext<User | null>(UserContext);
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
 
   const [roleSearch, setRoleSearch] = useState('');
+  const [value] = useDebounce(roleSearch, 500);
+
   const [page, setPage] = useState(1);
   const [pageReady, setPageReady] = useState(false);
 
   const [showMore, setShowMore] = useState(false);
+  const [loadingJobs, setLoadingJobs] = useState(false);
 
-  const [remoteFilter, setRemoteFilter] = useState<Boolean>(false);
+  const [remoteFilter, setRemoteFilter] = useState<boolean>(false);
 
   /*
    * Filter and Sorts
@@ -37,7 +43,9 @@ export default function App() {
   const [experienceFilter, setExperienceFilter] = useState<MultiValue<ValueLabel> | null>(null);
 
   const [sortOption, setSortOption] = useState<SingleValue<ValueLabel>>(SortOptions[0]);
-  
+
+
+
 
 
   /*
@@ -46,7 +54,6 @@ export default function App() {
   useEffect(() => {
 
     setPageReady(true);
-
   }, []);
 
 
@@ -60,6 +67,8 @@ export default function App() {
   function getJobs() {
 
     console.info("Loading the first page");
+
+    setLoadingJobs(true);
 
     /*
      * Defensive code: make sure we only load the first page once
@@ -86,9 +95,12 @@ export default function App() {
       .then(response => response.json())
       .then(data => {
         setJobs(data);
-
+        setLoadingJobs(false);
       })
-      .catch(error => console.error(error));
+      .catch(error => {
+        setLoadingJobs(false);
+        console.error(error)
+      });
 
   }
 
@@ -101,8 +113,7 @@ export default function App() {
     if (page === 1)
       return;
 
-    if (infinite_loading.current)
-      return;
+    console.log("Getting the next page");
 
     let qs = buildQueryString(page, locationOptions, roleSearch, remoteFilter, experienceFilter, sortOption);
 
@@ -110,7 +121,7 @@ export default function App() {
 
     fetch(`/api/jobs?v=1${qs}`)
       .then(response => response.json())
-      .then(data => {
+      .then((data:Job[]) => {
         setJobs(jobs.concat(data)); //Merge the new list of jobs with the old
         infinite_loading.current = false;
       })
@@ -121,8 +132,8 @@ export default function App() {
   /*
    * Build a query string
    */
-  function buildQueryString(page:number, locationOptions:ValueLabel, roleSearch:string,
-                            remoteFilter:boolean, experienceFilter:ValueLabel[], sortOption:ValueLabel):string {
+  function buildQueryString(page:number, locationOptions:ValueLabelId | null, roleSearch:string,
+                            remoteFilter:boolean, experienceFilter:MultiValue<ValueLabel> | null, sortOption:SingleValue<ValueLabel>):string {
 
     let jobs_params = `&p=${page}`;
 
@@ -151,32 +162,42 @@ export default function App() {
 
 
   /*
-   * Simple infinite scroll
-   *
-   * Its pretty buggy at the moment.
+   * Infinite scroll using Intersection Observer API
    */
   let infinite_loading = useRef(false);
+  const bottom = useRef(null);
 
-  function handleScroll(e) {
 
-    if (infinite_loading.current)
-      return;
+  useEffect(() => {
 
-    let overscan = 400;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
 
-    if (window.innerHeight + window.scrollY + overscan >= document.body.offsetHeight) {
-      setPage(page+1);
-    }
+        setPage((prevPage) => prevPage + 1);  //Avoid enclosure
+        console.log("INTERSECTING LOAD ANOTHER PAGE");
+      }
+    }, {rootMargin: "300px"});
 
-  }
-  window.addEventListener("scroll", handleScroll);
+    observer.observe(bottom.current);
+
+  }, []);
+
+
+
 
   /*
    * Reload the search when filters change
    */
   useEffect(() => {
+
     getJobs();
+  }, [locationOptions, value, remoteFilter, experienceFilter, sortOption]);
+
+  useEffect(() => {
+    setLoadingJobs(true);
+
   }, [locationOptions, roleSearch, remoteFilter, experienceFilter, sortOption]);
+
 
   /*
    * Get the next page
@@ -191,6 +212,9 @@ export default function App() {
     setShowMore(!showMore);
   }
 
+
+
+
   return (
     <div>
       <CreateButton show={currentUser} />
@@ -200,8 +224,10 @@ export default function App() {
         <div className="basis-3/3 lg:basis-2/3">
           Role / Company / Tech Search
           <div className="w-full">
-            <input name="myInput" value={roleSearch}
-                   onChange={(event) => {setRoleSearch(event.target.value)}}
+            <input name="myInput" value={roleSearch} placeholder=""
+                   onChange={(e) => {
+                     setRoleSearch(e.target.value);
+                   }}
                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none text-xl"/>
           </div>
         </div>
@@ -241,9 +267,6 @@ export default function App() {
       </div>
 
 
-
-
-
       <div className={`flex flex-row pt-8 pb-2 ${showMore ? 'show' : 'hidden'}`}>
         <div className="basis-3/5">
         </div>
@@ -281,7 +304,9 @@ export default function App() {
       </div>
 
 
+      <LoadingSpinner loading={loadingJobs} />
       <div className="flex flex-row py-4 overflow-x-scroll pt-4 md:pt-6 lg:pt-12">
+
         <table className="table-fixed w-full lg:min-w-full bg-white shadow-md rounded-xl py-6">
           <thead>
             <tr>
@@ -397,6 +422,9 @@ export default function App() {
           </tbody>
         </table>
 
+
+      </div>
+      <div ref={bottom} className="text-center block w-full h-[100px]">
       </div>
 
     </div>
