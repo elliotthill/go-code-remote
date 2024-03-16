@@ -20,43 +20,30 @@ import {Job} from "./types/job.js";
 
 export default function App() {
 
-
   const {currentUser, setCurrentUser} = useContext<User | null>(UserContext);
+
+  //The array of jobs
   const [jobs, setJobs] = useState<Job[]>([]);
 
-  const [roleSearch, setRoleSearch] = useState('');
-  const [value] = useDebounce(roleSearch, 500);
-
+  // The current job page, incrementing it will trigger an infinite page load
   const [page, setPage] = useState(1);
-  const [pageReady, setPageReady] = useState(false);
 
-  const [showMore, setShowMore] = useState(false);
+  //UI state for loading animations etc.
+  const [pageReady, setPageReady] = useState(false);
   const [loadingJobs, setLoadingJobs] = useState(false);
 
-  const [remoteFilter, setRemoteFilter] = useState<boolean>(false);
+  //Contains the full text query
+  const [roleSearch, setRoleSearch] = useState('');
+  const [value] = useDebounce(roleSearch, 500);   //Debounces the full text query
 
   /*
    * Filter and Sorts
    */
   const [locationOptions, setLocationOptions] = useState<SingleValue<ValueLabelId> | null>(null);
-
   const [experienceFilter, setExperienceFilter] = useState<MultiValue<ValueLabel> | null>(null);
-
   const [sortOption, setSortOption] = useState<SingleValue<ValueLabel>>(SortOptions[0]);
-
-
-
-
-
-  /*
-   * Route load
-   */
-  useEffect(() => {
-
-    setPageReady(true);
-  }, []);
-
-
+  const [remoteFilter, setRemoteFilter] = useState<boolean>(false);
+  const [showMore, setShowMore] = useState(false); //Show more filters
 
   /*
    * Returns a fresh set of results
@@ -70,9 +57,7 @@ export default function App() {
 
     setLoadingJobs(true);
 
-    /*
-     * Defensive code: make sure we only load the first page once
-     */
+    //Defensive code: make sure we only load the first page once
     if (page == 1 && jobs && jobs.length > 0 && !pageReady) {
       console.warn("Stopped requesting the same page again");
       return;
@@ -80,15 +65,7 @@ export default function App() {
 
     setPage(1);
 
-    /*
-     * Here we build the GET querystring
-     *
-     * There probably is a better way of doing this
-     *
-     * @TODO Remove this duplicated code from getJobsNextPage()
-     *   move to its own function
-     */
-
+    //Build the API querystring
     let qs = buildQueryString(1, locationOptions, roleSearch, remoteFilter, experienceFilter, sortOption);
 
     fetch(`/api/jobs?v=1${qs}`)
@@ -96,6 +73,7 @@ export default function App() {
       .then(data => {
         setJobs(data);
         setLoadingJobs(false);
+        setPageReady(true);
       })
       .catch(error => {
         setLoadingJobs(false);
@@ -115,6 +93,7 @@ export default function App() {
 
     console.log("Getting the next page");
 
+    //Build the API querystring
     let qs = buildQueryString(page, locationOptions, roleSearch, remoteFilter, experienceFilter, sortOption);
 
     infinite_loading.current = true;
@@ -170,17 +149,21 @@ export default function App() {
 
   useEffect(() => {
 
+    if (!pageReady)
+      return;
+
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
 
         setPage((prevPage) => prevPage + 1);  //Avoid enclosure
+
         console.log("INTERSECTING LOAD ANOTHER PAGE");
       }
-    }, {rootMargin: "300px"});
+    }, {rootMargin: "500px"});
 
     observer.observe(bottom.current);
 
-  }, []);
+  }, [pageReady]);
 
 
 
