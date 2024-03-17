@@ -22,6 +22,8 @@ const OtherOptions = [
     { value: 71, label: "Network Sec" },
     { value: 72, label: "Data Networking" },
     { value: 75, label: "GraphQL" },
+    { value: 85, label: "A/B Testing" },
+    { value: 86, label: "WASM" },
 ];
 
 export default OtherOptions;

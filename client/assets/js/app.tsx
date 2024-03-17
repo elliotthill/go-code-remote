@@ -47,6 +47,28 @@ export default function App() {
   const [showMore, setShowMore] = useState(false); //Show more filters
 
 
+  let [AllLocationOptions, setAllLocationOptions] = useState([]);
+
+  /*
+   * Get the list of specific locations, Seattle, London etc etc. from the server
+   * and append it to LocationOptions. Kind of overly complicated :(
+   */
+  useEffect(() => {
+
+    //Load other locations for this job
+    fetch('/api/jobs/locations')
+        .then(response => response.json())
+        .then(data => {
+
+          setAllLocationOptions(LocationOptions.concat(data));
+
+        })
+        .catch(error => console.error(error));
+
+
+  }, []);
+
+
   /*
    * Returns a fresh set of results
    *
@@ -233,7 +255,7 @@ export default function App() {
           <div className="w-4/4">
             <Select
               name="location"
-              options={LocationOptions}
+              options={AllLocationOptions}
               className="basic-multi-select text-xl"
               classNamePrefix="select"
               onChange={setLocationOptions}

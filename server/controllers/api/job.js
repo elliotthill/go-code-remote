@@ -11,15 +11,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const models = require('../../models/index');
 const Sequelize = require("sequelize");
+function jobLocationsController(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let locations = yield models.sequelize.query(` 
+        SELECT id as value, CONCAT(location, ', ', IFNULL(state, country)) as label
+        FROM location
+        WHERE id NOT IN(1,17)
+        `, {
+            type: models.sequelize.QueryTypes.SELECT
+        });
+        res.json(locations);
+    });
+}
 function jobController(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        const location_param = req.query.location; //Value Label pair
+        const location_param = Number(req.query.location); //Value Label pair
         const role_param = req.query.role; //String
         const remote_param = req.query.remote;
         const sort = req.query.sort;
         let where_clause = "";
         let role_param_like = '';
-        let order_clause = "created DESC, id DESC";
+        let order_clause = "updated DESC";
         /*
          * Order options
          */
@@ -34,11 +46,44 @@ function jobController(req, res, next) {
          */
         if (location_param && location_param != 1000) {
             where_clause = " AND location.id = :location_id ";
-            if (location_param == 999) {
-                where_clause = " AND location.country = 'US' ";
-            }
-            else if (location_param == 998) {
-                where_clause = " AND location.country = 'UK' ";
+            /*
+             * These are harcoded locations like US, or California
+             * that refer to multiple locations. So we overwrite the location id above
+             * and do custom logic for these
+             */
+            switch (location_param) {
+                case 999: {
+                    where_clause = " AND location.country = 'US' ";
+                    break;
+                }
+                case 998: {
+                    where_clause = " AND location.country = 'UK' ";
+                    break;
+                }
+                case 997: {
+                    where_clause = " AND location.country = 'CA' ";
+                    break;
+                }
+                case 996: {
+                    where_clause = " AND location.currency = '€' "; //EU is not a country so we have to make do
+                    break;
+                }
+                case 995: {
+                    where_clause = " AND location.country = 'AUS' "; //EU is not a country so we have to make do
+                    break;
+                }
+                case 994: {
+                    where_clause = " AND location.state = 'CA' "; //EU is not a country so we have to make do
+                    break;
+                }
+                case 993: {
+                    where_clause = " AND location.state = 'TX' "; //EU is not a country so we have to make do
+                    break;
+                }
+                default: {
+                    //statements;
+                    break;
+                }
             }
         }
         /*
@@ -156,4 +201,4 @@ function jobController(req, res, next) {
         res.json(jobs);
     });
 }
-module.exports = { jobController };
+module.exports = { jobController, jobLocationsController };
