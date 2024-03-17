@@ -1,6 +1,8 @@
 const models = require('../../models/index');
 const Sequelize = require("sequelize");
 
+
+
 async function jobController(req, res, next) {
 
 

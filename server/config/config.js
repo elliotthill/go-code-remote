@@ -1,7 +1,7 @@
 module.exports =
 {
     "development": {
-        "username": process.env.DB_USERNAME,
+        "username": "root",
         "password": "root",
         "database": "testing",
         "host": "127.0.0.1",

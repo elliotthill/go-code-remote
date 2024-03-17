@@ -40,4 +40,20 @@ jspm_packages
 dump.rdb
 
 #Hide Javascript source files
+server/routes/*.js
+server/routes/*.js.map
+server/controllers/*.js
+server/controllers/*.js.map
+server/models/*.js
+server/models/*.js.map
+server/config/passport.js
+server/config/passport.js.map
+tests/*.js
+tests/*.js.map
 
+app.js
+app.js.map
+
+client/**/*.js
+client/**/*.jsx
+client/**/*.js.map
