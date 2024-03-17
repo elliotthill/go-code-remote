@@ -10,6 +10,7 @@ import {SortOptions, ExperienceOptions} from "./data/filter-options.js";
 
 import AdminButton, {CreateButton} from "./admin-button.js";
 import RemoteLabel from "./ui/remote-label.js";
+import RatingLabel from "./ui/rating-label.js";
 import LoadingSpinner from "./ui/loading-spinner.js";
 
 //Access user info
@@ -44,6 +45,7 @@ export default function App() {
   const [sortOption, setSortOption] = useState<SingleValue<ValueLabel>>(SortOptions[0]);
   const [remoteFilter, setRemoteFilter] = useState<boolean>(false);
   const [showMore, setShowMore] = useState(false); //Show more filters
+
 
   /*
    * Returns a fresh set of results
@@ -362,11 +364,12 @@ export default function App() {
                         {job.company}
                       </div>
                       <a href="https://www.glassdoor.com/?utm_source=gocoderemote.com" rel="noindex nofollow" target="_blank">
-                        <div className="text-xs text-gray-400">Glassdoor <span className="font-semibold ml-8">{job.glassdoor}</span></div>
+                        <div className="text-xs text-gray-400 pr-6">Glassdoor <RatingLabel rating={job.glassdoor}/></div>
                       </a>
                       <a href="https://www.indeed.com/?utm_source=gocoderemote.com" rel="noindex nofollow" target="_blank">
-                        <div className="text-xs text-gray-400">Indeed <span className="font-semibold ml-12">{job.indeed}</span></div>
+                        <div className="text-xs text-gray-400 pr-6">Indeed <RatingLabel rating={job.indeed}/></div>
                       </a>
+
 
                       {job.company_meta.map(meta=>{
                         return (
