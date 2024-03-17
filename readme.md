@@ -55,3 +55,15 @@ You will also need to build Tailwind CSS as you go
 ```
 npx tailwindcss -i assets/css/style.css -o assets/css/output.css --watch
 ```
+
+## Running tests
+
+To run all tests:
+```
+npx jest
+```
+Jest uses puppeteer to E2E test the site that should be running locally. The idea here is to do the test as part of CI/CD pipeline on some sort of containerized platform.
+
+
+
+
