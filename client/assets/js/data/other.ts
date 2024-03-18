@@ -24,6 +24,9 @@ const OtherOptions = [
     { value: 75, label: "GraphQL" },
     { value: 85, label: "A/B Testing" },
     { value: 86, label: "WASM" },
+    { value: 88, label: "NoSQL" },
+    { value: 89, label: "SQLite" },
+    { value: 90, label: "Cassandra" },
 ];
 
 export default OtherOptions;

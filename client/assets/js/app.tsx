@@ -344,7 +344,7 @@ export default function App() {
               {jobs.map(job => {
                 return (
                   <tr className="border-b border-blue-gray-200 hover:bg-gray-50 cursor-pointer" key={job.id}>
-                    <td className="py-3 px-3 lg:px-6 w-auto lg:w-5/12 h-auto lg:h-[100px]" onClick={()=> window.open(job.source_url, "_blank")}>
+                    <td className="py-3 lg:py-6 px-3 lg:px-6 w-auto lg:w-5/12 h-auto lg:h-[100px]" onClick={()=> window.open(job.source_url, "_blank")}>
                       <div className="absolute mt-[-15px] text-xs text-gray-400 capitalize hidden lg:block">
                         {job.experience}
                       </div>
@@ -386,7 +386,7 @@ export default function App() {
                       </div>
 
                     </td>
-                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url, "_blank")}>
+                    <td className="hidden lg:table-cell py-3 lg:py-6 px-6" onClick={()=> window.open(job.source_url, "_blank")}>
                       <div className="text-lg">
                         {job.company}
                       </div>
@@ -406,7 +406,7 @@ export default function App() {
                         );
                       })}
                     </td>
-                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url, "_blank")}>
+                    <td className="hidden lg:table-cell py-3 lg:py-6 px-6" onClick={()=> window.open(job.source_url, "_blank")}>
                         <div>
                           {job.location}, {job.state ? job.state: job.country}
                         </div>
@@ -416,12 +416,14 @@ export default function App() {
 
                         <RemoteLabel remote={job.remote} country={job.country}/>
                     </td>
-                    <td className="hidden lg:table-cell py-3 px-6" onClick={()=> window.open(job.source_url, "_blank")}>
+                    <td className="hidden lg:table-cell py-3 lg:py-6 px-6" onClick={()=> window.open(job.source_url, "_blank")}>
                       {!!job.rate && job.currency}
                       {!!job.rate && job.rate.toLocaleString()}
+                      {job.type === 'contract' && `/hour`}
+
 
                     </td>
-                    <td className="hidden lg:table-cell py-3 px-6">
+                    <td className="hidden lg:table-cell py-3 lg:py-6 px-6">
 
                       <AdminButton show={currentUser} job_id={job.id}/>
 
