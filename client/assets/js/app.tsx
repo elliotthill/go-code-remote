@@ -1,4 +1,4 @@
-import React, {Fragment, useState, useEffect, useRef, useContext} from "react";
+import React, {Fragment, useState, useEffect, useRef, useContext, MutableRefObject} from "react";
 
 import { useDebounce } from 'use-debounce';
 import Select, { MultiValue, SingleValue } from "react-select";
@@ -19,8 +19,11 @@ import {User} from './services/auth.js';
 import {ValueLabel,ValueLabelId} from "./types/form.js";
 import {Job} from "./types/job.js";
 
+
+
 export default function App() {
 
+  //@ts-ignore
   const {currentUser, setCurrentUser} = useContext<User | null>(UserContext);
 
   //The array of jobs
@@ -37,6 +40,7 @@ export default function App() {
   const [roleSearch, setRoleSearch] = useState('');
   const [value] = useDebounce(roleSearch, 500);   //Debounces the full text query
 
+
   /*
    * Filter and Sorts
    */
@@ -47,7 +51,7 @@ export default function App() {
   const [showMore, setShowMore] = useState(false); //Show more filters
 
 
-  let [AllLocationOptions, setAllLocationOptions] = useState([]);
+  let [AllLocationOptions, setAllLocationOptions] = useState<ValueLabelId[]>([]);
 
   /*
    * Get the list of specific locations, Seattle, London etc etc. from the server
@@ -168,7 +172,7 @@ export default function App() {
    * Infinite scroll using Intersection Observer API
    */
   let infinite_loading = useRef(false);
-  const bottom = useRef(null);
+  const bottom = useRef<Element | null>(null);
 
 
   useEffect(() => {
@@ -185,7 +189,8 @@ export default function App() {
       }
     }, {rootMargin: "500px"});
 
-    observer.observe(bottom.current);
+
+    observer.observe(bottom.current!);
 
   }, [pageReady]);
 

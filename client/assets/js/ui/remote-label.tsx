@@ -1,7 +1,13 @@
 import React from "react";
 import {Tooltip} from 'flowbite-react';
 import {remote_anywhere_explanation, remote_domestic_explanation} from '../data/explanation.js';
-export default function RemoteLabel({remote, country}){
+
+interface Props{
+    remote: string,
+    country: string
+}
+
+export default function RemoteLabel({remote, country} : Props){
 
 
   if (remote === 'remote') {
