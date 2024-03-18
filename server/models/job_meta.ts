@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function (sequelize, DataTypes) {
+export default  function (sequelize, DataTypes) {
     return sequelize.define('JobMeta', {
         job_id: {
             type: DataTypes.INTEGER,

@@ -1,24 +1,32 @@
-const models = require('../../models/index');
-const Sequelize = require("sequelize");
+import {models, sequelize} from '../../models/index.js';
+
+import express from 'express';
+
+/*
+ * This is used to pass a list of locations to the front end
+ */
+export async function jobLocationsController(req, res, next) {
 
 
-async function jobLocationsController(req, res, next) {
-
-
-    let locations = await models.sequelize.query(` 
+    let locations = await sequelize.query(` 
         SELECT id as value, CONCAT(location, ', ', IFNULL(state, country)) as label
         FROM location
         WHERE id NOT IN(1,17)
         `, {
-        type: models.sequelize.QueryTypes.SELECT
+        type: sequelize.QueryTypes.SELECT
     });
 
     res.json(locations);
 
 }
 
-
-async function jobController(req, res, next) {
+/*
+ * This is the main jobs endpoint, it returns a list of jobs that match the
+ * filters supplied.
+ *
+ * All user inputs end up parameterized
+ */
+export async function jobController(req, res, next) {
 
 
     const location_param = Number(req.query.location);    //Value Label pair
@@ -29,7 +37,7 @@ async function jobController(req, res, next) {
 
     let where_clause = "";
     let role_param_like = '';
-    let order_clause = "updated DESC";
+    let order_clause = "created DESC";
 
     /*
      * Order options
@@ -50,7 +58,7 @@ async function jobController(req, res, next) {
 
 
         /*
-         * These are harcoded locations like US, or California
+         * These are harcoded locations like US, CA, or California
          * that refer to multiple locations. So we overwrite the location id above
          * and do custom logic for these
          */
@@ -147,7 +155,7 @@ async function jobController(req, res, next) {
      * We can't use entirely parameterized queries here due to the complicated filtering options
      * so we use sequelize.escape() for those parts of the queries that contain data from the client
      */
-    let jobs = await models.sequelize.query(` 
+    let jobs = await sequelize.query(` 
         SELECT job.id, role.role as role, company.company as company, location.location as location, job.experience as experience,
         created, updated, job.source_url as source_url, job.type as type, job.rate as rate, count(DISTINCT job.id)-1 as other_locations,
         CONCAT(\
@@ -178,7 +186,7 @@ async function jobController(req, res, next) {
             posts_per_page: posts_per_page,
             offset: offset
         },
-        type: models.sequelize.QueryTypes.SELECT
+        type: sequelize.QueryTypes.SELECT
     });
 
 
@@ -225,4 +233,4 @@ async function jobController(req, res, next) {
     res.json(jobs);
 }
 
-module.exports = {jobController, jobLocationsController}
+

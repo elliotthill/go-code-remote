@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,22 +7,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-const models = require('../../models/index');
-const Sequelize = require("sequelize");
-function jobLocationsController(req, res, next) {
+import { sequelize } from '../../models/index.js';
+/*
+ * This is used to pass a list of locations to the front end
+ */
+export function jobLocationsController(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        let locations = yield models.sequelize.query(` 
+        let locations = yield sequelize.query(` 
         SELECT id as value, CONCAT(location, ', ', IFNULL(state, country)) as label
         FROM location
         WHERE id NOT IN(1,17)
         `, {
-            type: models.sequelize.QueryTypes.SELECT
+            type: sequelize.QueryTypes.SELECT
         });
         res.json(locations);
     });
 }
-function jobController(req, res, next) {
+/*
+ * This is the main jobs endpoint, it returns a list of jobs that match the
+ * filters supplied.
+ *
+ * All user inputs end up parameterized
+ */
+export function jobController(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const location_param = Number(req.query.location); //Value Label pair
         const role_param = req.query.role; //String
@@ -31,7 +37,7 @@ function jobController(req, res, next) {
         const sort = req.query.sort;
         let where_clause = "";
         let role_param_like = '';
-        let order_clause = "updated DESC";
+        let order_clause = "created DESC";
         /*
          * Order options
          */
@@ -47,7 +53,7 @@ function jobController(req, res, next) {
         if (location_param && location_param != 1000) {
             where_clause = " AND location.id = :location_id ";
             /*
-             * These are harcoded locations like US, or California
+             * These are harcoded locations like US, CA, or California
              * that refer to multiple locations. So we overwrite the location id above
              * and do custom logic for these
              */
@@ -131,7 +137,7 @@ function jobController(req, res, next) {
          * We can't use entirely parameterized queries here due to the complicated filtering options
          * so we use sequelize.escape() for those parts of the queries that contain data from the client
          */
-        let jobs = yield models.sequelize.query(` 
+        let jobs = yield sequelize.query(` 
         SELECT job.id, role.role as role, company.company as company, location.location as location, job.experience as experience,
         created, updated, job.source_url as source_url, job.type as type, job.rate as rate, count(DISTINCT job.id)-1 as other_locations,
         CONCAT(\
@@ -162,7 +168,7 @@ function jobController(req, res, next) {
                 posts_per_page: posts_per_page,
                 offset: offset
             },
-            type: models.sequelize.QueryTypes.SELECT
+            type: sequelize.QueryTypes.SELECT
         });
         /*
          * Parse it as JSON here, so Express can send it as JSON and not strings
@@ -201,4 +207,3 @@ function jobController(req, res, next) {
         res.json(jobs);
     });
 }
-module.exports = { jobController, jobLocationsController };

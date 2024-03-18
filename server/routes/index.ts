@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
+import express from 'express';
+const router = express.Router();
 
-const {Index} = require('../controllers/index');
+import {Index} from '../controllers/index.js';
 
 /* GET home page. */
 router.get('/', Index);
 
-module.exports = router;
+export default router;

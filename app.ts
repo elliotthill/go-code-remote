@@ -1,47 +1,54 @@
 //Express framework
-const express = require('express');
+import express from 'express'; //const express = require('express');
+
 
 //Express session
-const session = require('express-session');
-const sequelizeStore = require('connect-session-sequelize')(session.Store);
+import session from 'express-session'; //const session = require('express-session');
+import connectSessionSequelize from 'connect-session-sequelize'; //const sequelizeStore = require('connect-session-sequelize')(session.Store);
+const sequelizeStore = connectSessionSequelize(session.Store);
 
 //Necessary modules
-const path = require('path');
-const favicon = require('serve-favicon');
+import path from 'path';
 
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const errorhandler = require('errorhandler');
+import favicon from 'serve-favicon';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import errorhandler from 'errorhandler';
 
 //Authentication
-const passport = require('passport');
-const passportConfig = require('./server/config/passport');
-
+import passport from 'passport';
+import './server/config/passport.js';
 
 //SPA entry
-const routes = require('./server/routes/index');
+import routes from './server/routes/index.js';
+
 //Public API
-const job = require('./server/routes/job');
+import job from './server/routes/job.js';
 
 //Auth API - MUST BE UNCACHED
-const user = require('./server/routes/user');
+import user from './server/routes/user.js';
 
 //CMS ADMIN API - MUST BE UNCACHED
-const cms = require('./server/routes/cms');
+import cms from './server/routes/cms.js';
 
 //Top secret API
-const admin = require('./server/routes/admin');
+import admin from './server/routes/admin.js';
 
 const app = express();
 
 
 /*
+ * ES6 __dirname hack
+ */
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
+
+/*
  * Security
  */
-
-//Obfuscation
-//var helmet = require('helmet');
-//app.use(helmet());
 
 //Template Rendering
 app.set('views', path.join(__dirname, 'client/views'));
@@ -59,7 +66,7 @@ app.use(cookieParser());
 
 
 let today = new Date();
-const models = require('./server/models/index');
+import {models, sequelize} from './server/models/index.js';
 
 app.use(session({
     secret: '3qwxa8NRIj5oxoY',
@@ -67,7 +74,7 @@ app.use(session({
         expires: new Date(today.getFullYear() + 10, today.getMonth(), today.getDate())
     },
     store: new sequelizeStore({
-        db: models.sequelize,
+        db: sequelize,
         checkExpirationInterval: 24 * 15 * 60 * 1000, // The interval at which to cleanup expired sessions in milliseconds.
     }),
     resave: false,
@@ -184,4 +191,4 @@ if (app.get('env') === 'development') {
 }
 
 //All done
-module.exports = app;
+export default app;

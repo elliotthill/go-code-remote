@@ -6,36 +6,44 @@
  * Copied pretty much verbatim from their docs. Typescript not used.
  *
  */
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import Sequelize from 'sequelize';
 
-var fs = require('fs');
-var path = require('path');
-var Sequelize = require('sequelize');
-var basename = path.basename(module.filename);
-var env = process.env.NODE_ENV || 'development';
-var config = require(__dirname + '/../config/config.js')[env];
-var db = {};
+export const models = {};
 
-var sequelize = new Sequelize(config.database, config.username, config.password, config);
+//These three lines essentially replace __dirname from CJS
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+const basename = path.basename(filename);
+
+const env = process.env.NODE_ENV || 'development';
+
+import globalConfig from '../config/config.js';
+const config = globalConfig[env];
 
 
-fs
-    .readdirSync(__dirname)
-    .filter(function (file) {
-        return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
-    })
-    .forEach(function (file) {
-        var model = sequelize['import'](path.join(__dirname, file));
-        //const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes)
-        db[model.name] = model;
+export const sequelize = new Sequelize(config.database, config.username, config.password, config);
+
+
+(async () => {
+    const files = fs
+        .readdirSync(dirname)
+        .filter((file) => (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js'));
+
+    await Promise.all(files.map(async (file) => {
+        const module = await import(path.join(dirname, file));
+        const model = module.default(sequelize, Sequelize);
+        models[model.name] = model;
+    }));
+
+    Object.keys(models).forEach((modelName) => {
+        if (models[modelName].associate) {
+            models[modelName].associate(models);
+        }
     });
+})();
 
-Object.keys(db).forEach(function (modelName) {
-    if (db[modelName].associate) {
-        db[modelName].associate(db);
-    }
-});
+//export default { models, sequelize, Sequelize };
 
-
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
-module.exports = db;

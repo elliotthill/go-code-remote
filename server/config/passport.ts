@@ -1,7 +1,14 @@
-var passport = require('passport');
+/*var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var models = require('../models/index');
-const bcrypt = require("bcrypt-nodejs");
+const bcrypt = require("bcrypt-nodejs");*/
+
+import passport from 'passport';
+import Strategies from 'passport-local';
+let LocalStrategy = Strategies.Strategy;
+
+import {models, sequelize} from "../models/index.js";
+import bcrypt from 'bcrypt-nodejs';
 
 // Serialize Sessions
 passport.serializeUser(function (user, done) {

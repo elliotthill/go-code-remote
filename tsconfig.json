@@ -5,9 +5,10 @@
     "resolveJsonModule": true,
 
     "target": "es2016",
-    "module": "CommonJS",
+    "module": "esnext",
     "esModuleInterop": true,
     "moduleDetection": "force", //Stop 'Cannot redeclare block-scoped variable' errors
+    "moduleResolution": "nodenext",
     "types": [
       "puppeteer",
       "jest-environment-puppeteer",

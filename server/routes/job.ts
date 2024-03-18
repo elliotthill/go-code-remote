@@ -1,13 +1,13 @@
 'use strict';
 
-var express = require('express');
-var router = express.Router();
+import express from 'express';
+const router = express.Router();
 
 //Controllers
-const {jobController, jobLocationsController} =  require('../controllers/api/job');
+import {jobController, jobLocationsController} from '../controllers/api/job.js';
 
 router.get('/jobs', jobController);
 
 router.get('/jobs/locations', jobLocationsController)
 
-module.exports = router;
+export default router;

@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function (sequelize, DataTypes) {
+export default  function (sequelize, DataTypes) {
     return sequelize.define('Role', {
         id: {
             type: DataTypes.INTEGER.UNSIGNED,

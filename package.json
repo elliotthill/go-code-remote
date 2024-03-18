@@ -2,10 +2,11 @@
   "name": "react-learn",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "scripts": {
     "start": "npm-run-all --parallel watch:server watch:build",
     "watch:build": "webpack --watch",
-    "watch:server": "nodemon bin/www --watch \"./client/dist\"",
+    "watch:server": "nodemon bin/www.js --watch \"./client/dist\"",
     "test": "jest"
   },
   "dependencies": {

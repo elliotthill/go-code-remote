@@ -2,15 +2,26 @@
 /*
  * Clustering
  */
-var cluster = require('cluster');
+//var cluster = require('cluster');
+import cluster from 'cluster';
+
+import app from '../app.js';    //var app = require('../app');
+//var debug = require('debug')('node_app:server');
+import debugClass from 'debug';
+const debug = debugClass('node_app:server');
+
+import http from 'http'; //    var http = require('http');
+
+import {models, sequelize} from '../server/models/index.js'; //var models = require("../server/models");
+import os from 'os';
 
 if (cluster.isMaster)
 {
     // Count the machine's CPUs
-    var cpuCount = require('os').cpus().length;
+    const cpuCount = os.cpus().length;
     
     // Create a worker for each CPU
-    for (var i = 0; i < cpuCount; i += 1) {
+    for (let i = 0; i < cpuCount; i += 1) {
         cluster.fork();
     }
 
@@ -25,13 +36,8 @@ if (cluster.isMaster)
 
 } else {
 
-    /**
-     * Module dependencies.
-     */
-    var app = require('../app');
-    var debug = require('debug')('node_app:server');
-    var http = require('http');
-    var models = require("../server/models");
+
+
     /**
      * Get port from environment and store in Express.
      */
@@ -42,7 +48,7 @@ if (cluster.isMaster)
     /**
      * Create HTTP server.
      */
-    models.sequelize.sync().then(function () {
+    sequelize.sync().then(function () {
 
       var server = http.createServer(app);
 
