@@ -1,9 +1,12 @@
-const path = require("path");
-const webpack = require('webpack');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+import webpack from 'webpack';
 
-module.exports = {
-    mode: "production",
+import path from 'path';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+export default {
+    mode: "development",
     entry: './client/assets/js/index.js',
     output: {
         path: path.join(__dirname, 'client/dist'),

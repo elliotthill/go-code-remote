@@ -1,7 +1,32 @@
 'use strict';
 
-export default function (sequelize, DataTypes) {
-    let User = sequelize.define('User', {
+import {
+    Model,
+    DataTypes,
+    Sequelize,
+    InferAttributes,
+    InferCreationAttributes,
+    CreationOptional
+} from "sequelize";
+
+export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+
+    declare id: CreationOptional<number>;
+    declare username: string;
+    declare password: string;
+    declare email: string;
+    declare registered: string
+
+    format()  {
+        //@ts-ignore
+        return [this.username, this.email].join(',');
+    }
+}
+
+export default function (sequelize: Sequelize) {
+
+
+    User.init({
         id: {
             type: DataTypes.INTEGER.UNSIGNED,
             autoIncrement: true,
@@ -30,12 +55,11 @@ export default function (sequelize, DataTypes) {
         },
 
     }, {
+        tableName:'users',
         timestamps: false,
         underscored: true,
+        sequelize
     });
 
+}
 
-
-
-    return User
-};

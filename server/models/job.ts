@@ -1,7 +1,37 @@
 'use strict';
 
-export default function (sequelize, DataTypes) {
-    return sequelize.define('Job', {
+import {
+    Model,
+    DataTypes,
+    Sequelize,
+    InferAttributes,
+    InferCreationAttributes,
+    CreationOptional
+} from "sequelize";
+
+export class Job extends Model<InferAttributes<Job>, InferCreationAttributes<Job>> {
+
+    declare id: CreationOptional<number>;
+    declare company_id: number;
+    declare location_id: number;
+    declare role_id: number;
+    declare title: string;
+    declare department: string;
+    declare created: string;
+    declare updated: string;
+    declare source_url: string;
+    declare type: string;
+    declare rate: number;
+    declare search_keywords: string;
+    declare remote: string;
+    declare more_jobs: number;
+    declare status: string;
+    declare experience: string;
+}
+
+export default function (sequelize : Sequelize) {
+
+    Job.init({
         id: {
             type: DataTypes.INTEGER.UNSIGNED,
             primaryKey: true,
@@ -70,8 +100,7 @@ export default function (sequelize, DataTypes) {
             allowNull: false,
             defaultValue: 'mid'
         }
-
-    }, {
+    },{
         timestamps: false,
         underscored: true,
         tableName: 'job',
@@ -81,6 +110,8 @@ export default function (sequelize, DataTypes) {
                 fields: ['company_id', 'location_id', 'role_id'],
                 name: 'company_location_role'
             }
-        ]
-    })
-};
+        ],
+        sequelize
+    });
+}
+

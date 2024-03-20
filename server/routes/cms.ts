@@ -267,7 +267,7 @@ router.get('/job/other-locations/:job', async function(req, res, next) {
 
     const job_id = req.params.job;
 
-    const job = await Job.findOne({
+    const job = await models.Job.findOne({
         where: {id: job_id}
     });
 

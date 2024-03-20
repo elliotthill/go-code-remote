@@ -1,49 +1,43 @@
 'use strict';
 
-/*
- * Sequelize recommends loading models within index.js here.
- * So you can call model.{AnyModel} without explicitly importing that model.
- * Copied pretty much verbatim from their docs. Typescript not used.
- *
- */
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import Sequelize from 'sequelize';
-
-export const models = {};
-
-//These three lines essentially replace __dirname from CJS
-const filename = fileURLToPath(import.meta.url);
-const dirname = path.dirname(filename);
-const basename = path.basename(filename);
-
+import {Sequelize} from 'sequelize';
 const env = process.env.NODE_ENV || 'development';
 
+//@ts-ignore
 import globalConfig from '../config/config.js';
 const config = globalConfig[env];
 
 
 export const sequelize = new Sequelize(config.database, config.username, config.password, config);
 
+/**
+ * We have to verbosely load our models one-by-one at compile time
+ * rather than dynamically at runtime, so that typescript can understand them
+ */
+import userInit, {User} from './user.js';
+import roleInit, {Role} from './role.js';
+import metaInit, {Meta} from "./meta.js";
+import locationInit, {Location} from "./location.js";
+import jobMetaInit, {JobMeta} from "./job_meta.js";
+import jobInit, {Job} from "./job.js";
+import companyInit, {Company} from "./company.js";
 
-(async () => {
-    const files = fs
-        .readdirSync(dirname)
-        .filter((file) => (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js'));
 
-    await Promise.all(files.map(async (file) => {
-        const module = await import(path.join(dirname, file));
-        const model = module.default(sequelize, Sequelize);
-        models[model.name] = model;
-    }));
+userInit(sequelize);
+roleInit(sequelize);
+metaInit(sequelize);
+locationInit(sequelize);
+jobMetaInit(sequelize);
+jobInit(sequelize);
+companyInit(sequelize);
 
-    Object.keys(models).forEach((modelName) => {
-        if (models[modelName].associate) {
-            models[modelName].associate(models);
-        }
-    });
-})();
-
-//export default { models, sequelize, Sequelize };
+export const models = {
+    User,
+    Role,
+    Meta,
+    Location,
+    JobMeta,
+    Job,
+    Company
+};
 

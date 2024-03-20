@@ -1,8 +1,3 @@
-/*var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var models = require('../models/index');
-const bcrypt = require("bcrypt-nodejs");*/
-
 import passport from 'passport';
 import Strategies from 'passport-local';
 let LocalStrategy = Strategies.Strategy;
@@ -24,7 +19,7 @@ passport.deserializeUser(function (user, done) {
         }
     }).then(function (user) {
         done(null, user);
-    }).error(function (err) {
+    }).catch(function (err) {
         done(err, null)
     });
 });
@@ -40,14 +35,21 @@ passport.use(new LocalStrategy({
         console.log(password);
 
 
-        models.User.findOne({where:{ email: email}}).then(function (user, err) {
+        models.User.findOne({where:{ email: email}}).then((user) => {
 
-            console.log(err);
+            if (!user) {
+                return done(null, false);
+            }
 
-            if (err) { return done(err); }
-            if (!user) { return done(null, false); }
-            if (!bcrypt.compareSync(password, user.password)) { return done(null, false); }
+            if (!bcrypt.compareSync(password, user.password)) {
+                return done(null, false);
+            }
+
             return done(null, user);
+
+        }).catch((err) => {
+            console.log(err);
+            return done(err);
 
         });
     }

@@ -1,11 +1,11 @@
 import {models, sequelize} from '../../models/index.js';
 
-import express from 'express';
+import express, {Request, Response, NextFunction} from 'express';
 
 /*
  * This is used to pass a list of locations to the front end
  */
-export async function jobLocationsController(req, res, next) {
+export async function jobLocationsController(req:Request, res:Response, next:NextFunction) {
 
 
     let locations = await sequelize.query(` 
@@ -17,7 +17,6 @@ export async function jobLocationsController(req, res, next) {
     });
 
     res.json(locations);
-
 }
 
 /*
