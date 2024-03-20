@@ -13,7 +13,6 @@ import path from 'path';
 import favicon from 'serve-favicon';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-import errorhandler from 'errorhandler';
 
 //Authentication
 import passport from 'passport';
@@ -141,7 +140,7 @@ app.use(function(req, res, next) {
 });
 
 // error handlers
-if (app.get('env') === 'development') {
+if (app.get('env') === 'development' || app.get('env') === 'docker') {
 
     console.log('RUNNING IN DEV MODE....');
 
@@ -161,10 +160,6 @@ if (app.get('env') === 'development') {
         });
     });
 
-    app.use(errorhandler({
-        dumpExceptions: true,
-        showStack: true
-    }));
 
 } else if (app.get('env') === 'production' || app.get('env') === 'staging' ) {
 

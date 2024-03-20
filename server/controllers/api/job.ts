@@ -1,19 +1,20 @@
 import {models, sequelize} from '../../models/index.js';
-
+import {QueryTypes, QueryOptions, QueryOptionsWithType} from "sequelize";
 import express, {Request, Response, NextFunction} from 'express';
+import {Meta} from "../../models/meta.js";
 
 /*
  * This is used to pass a list of locations to the front end
  */
-export async function jobLocationsController(req:Request, res:Response, next:NextFunction) {
+export async function jobLocationsController(req: Request, res: Response, next: NextFunction) {
 
 
-    let locations = await sequelize.query(` 
+    let locations = await sequelize.query<Location>(` 
         SELECT id as value, CONCAT(location, ', ', IFNULL(state, country)) as label
         FROM location
         WHERE id NOT IN(1,17)
         `, {
-        type: sequelize.QueryTypes.SELECT
+        type: QueryTypes.SELECT
     });
 
     res.json(locations);
@@ -25,7 +26,7 @@ export async function jobLocationsController(req:Request, res:Response, next:Nex
  *
  * All user inputs end up parameterized
  */
-export async function jobController(req, res, next) {
+export async function jobController(req: Request, res: Response, next: NextFunction) {
 
 
     const location_param = Number(req.query.location);    //Value Label pair
@@ -144,7 +145,7 @@ export async function jobController(req, res, next) {
 
     const posts_per_page = 25;
     let page = req.query.p ? req.query.p : 1;
-    page = parseInt(page) || 0;
+    page = parseInt(page.toString());
 
     const offset = (page - 1) * posts_per_page;
 
@@ -154,7 +155,7 @@ export async function jobController(req, res, next) {
      * We can't use entirely parameterized queries here due to the complicated filtering options
      * so we use sequelize.escape() for those parts of the queries that contain data from the client
      */
-    let jobs = await sequelize.query(` 
+    let jobs  = await sequelize.query<any>(` 
         SELECT job.id, role.role as role, company.company as company, location.location as location, job.experience as experience,
         created, updated, job.source_url as source_url, job.type as type, job.rate as rate, count(DISTINCT job.id)-1 as other_locations,
         CONCAT(\
@@ -185,7 +186,7 @@ export async function jobController(req, res, next) {
             posts_per_page: posts_per_page,
             offset: offset
         },
-        type: sequelize.QueryTypes.SELECT
+        type: QueryTypes.SELECT
     });
 
 
@@ -199,7 +200,7 @@ export async function jobController(req, res, next) {
 
         //We have to filter out NULL meta tags that MySQL outputs
         //We can't use IF() in MySQL because that causes malformed JSON in rare cases
-        job.meta = job.meta.filter(meta => {
+        job.meta = job.meta.filter((meta: Meta) => {
             return meta.value !== null;
         })
 

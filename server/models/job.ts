@@ -27,6 +27,7 @@ export class Job extends Model<InferAttributes<Job>, InferCreationAttributes<Job
     declare more_jobs: number;
     declare status: string;
     declare experience: string;
+
 }
 
 export default function (sequelize : Sequelize) {

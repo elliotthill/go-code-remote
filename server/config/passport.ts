@@ -5,13 +5,14 @@ let LocalStrategy = Strategies.Strategy;
 import {models, sequelize} from "../models/index.js";
 import bcrypt from 'bcrypt-nodejs';
 
+
 // Serialize Sessions
 passport.serializeUser(function (user, done) {
     done(null, user);
 });
 
 //Deserialize Sessions
-passport.deserializeUser(function (user, done) {
+passport.deserializeUser(function (user: Express.User, done) {
 
     models.User.findOne({
         where: {

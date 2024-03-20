@@ -4,6 +4,14 @@ import express from 'express';
 const router = express.Router();
 
 import {models, sequelize} from '../models/index.js';
+import {QueryTypes} from "sequelize";
+import {Meta} from "../models/meta.js";
+import {Job} from "../models/job.js";
+
+interface MetaValueLabel{
+    label: string;
+    value: string;
+}
 
 /*
  * Load CMS info for existing job - NOT for public consumption
@@ -17,7 +25,7 @@ router.get('/job/:job', async function(req, res, next) {
 
     const job_id = req.params.job;
 
-    let job = await sequelize.query(" \
+    let job = await sequelize.query<Job>(" \
         SELECT job.id, role.role as role, company.`company` as company, location.location as location, \
         created, updated, job.source_url as source_url, job.type as type, job.rate as rate, job.title as title,\
         job.remote as remote, job.more_jobs as more_jobs, job.experience as experience\
@@ -31,11 +39,11 @@ router.get('/job/:job', async function(req, res, next) {
         replacements: {
             job_id:job_id
         },
-        type: sequelize.QueryTypes.SELECT,
+        type: QueryTypes.SELECT,
         plain: true
     });
 
-    let meta = await sequelize.query(" \
+    let meta = await sequelize.query<Meta>(" \
         SELECT meta.id as value, meta.`value` as label\
         FROM job_meta\
         LEFT JOIN meta ON meta.`id` = job_meta.meta_id\
@@ -44,7 +52,7 @@ router.get('/job/:job', async function(req, res, next) {
         replacements: {
             job_id:job_id
         },
-        type: sequelize.QueryTypes.SELECT,
+        type: QueryTypes.SELECT,
     });
 
     res.json({"job":job, "meta":meta});
@@ -109,7 +117,7 @@ router.post('/job', async function(req, res) {
     search_keywords = add_synonyms(role, search_keywords);
 
 
-    await Promise.all(req.body.meta?.map(async (meta) => {
+    await Promise.all(req.body.meta?.map(async (meta:MetaValueLabel) => {
 
         search_keywords += ` ${meta.label}`;
     }));
@@ -149,7 +157,7 @@ router.post('/job', async function(req, res) {
             more_jobs: more_jobs,
             experience: experience
         },
-        type: sequelize.QueryTypes.INSERT
+        type: QueryTypes.INSERT
     })
 
     //Retreive the id
@@ -168,17 +176,17 @@ router.post('/job', async function(req, res) {
             WHERE job_id=:job_id\
             ", {
             replacements: {job_id:job_id},
-            type: sequelize.QueryTypes.DELETE
+            type: QueryTypes.DELETE
     });
 
 
-    await Promise.all(all_meta.map(async (meta) => {
+    await Promise.all(all_meta.map(async (meta:MetaValueLabel) => {
         const ignore = await sequelize.query(" \
             INSERT IGNORE INTO job_meta(job_id, meta_id)\
             VALUES(:job_id, :meta_id)\
             ", {
             replacements: {job_id:job_id, meta_id: meta.value},
-            type: sequelize.QueryTypes.INSERT
+            type: QueryTypes.INSERT
         });
     }));
 
@@ -188,7 +196,7 @@ router.post('/job', async function(req, res) {
 
 });
 
-function add_synonyms(role, search_keywords) {
+function add_synonyms(role: string, search_keywords: string) {
 
     if (role.includes("Developer")) {
         search_keywords += " Engineer";
@@ -222,7 +230,7 @@ router.post('/job/:job/delete', async function(req, res, next){
         replacements: {
             job_id: job_id
         },
-        type: sequelize.QueryTypes.UPDATE
+        type: QueryTypes.UPDATE
     });
 
     res.json({"status":"success"});
@@ -247,7 +255,7 @@ router.post('/job/check-duplicates', async (req, res, next) => {
             source_url: source_url
         },
         plain: true,
-        type: sequelize.QueryTypes.SELECT
+        type: QueryTypes.SELECT
     });
 
 
@@ -271,6 +279,11 @@ router.get('/job/other-locations/:job', async function(req, res, next) {
         where: {id: job_id}
     });
 
+    if (!job) {
+        res.status(500).send("Error invalid job provided");
+        return;
+    }
+
     let jobs = await sequelize.query(" \
         SELECT location.location as location, location.state as state, location.country as country, job.id as id\
         FROM job\
@@ -283,7 +296,7 @@ router.get('/job/other-locations/:job', async function(req, res, next) {
             company_id: job.company_id,
             job_id_exclude: job.id
         },
-        type: sequelize.QueryTypes.SELECT
+        type: QueryTypes.SELECT
     });
 
 
