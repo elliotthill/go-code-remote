@@ -1,0 +1,18 @@
+[Unit]
+Description=GCR Node Service
+
+[Service]
+ExecStart=/home/node/.nvm/versions/node/v18.19.1/bin/node /srv/www/node/go-code-remote/bin/www
+Restart=always
+
+StandardOutput=syslog
+SyslogIdentifier=node-gocoderemote
+User=node
+Group=node
+Environment=NODE_ENV=production
+Environment=DB_USERNAME=
+Environment=DB_PASSWORD=
+Environment=DB_HOST=
+Environment=DB_DATABASE=
+[Install]
+WantedBy=multi-user.target
