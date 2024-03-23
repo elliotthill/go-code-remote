@@ -1,5 +1,5 @@
 //Express framework
-import express from 'express'; //const express = require('express');
+import express,{Request, Response, NextFunction} from 'express'; //const express = require('express');
 
 
 //Express session
@@ -88,13 +88,14 @@ app.use(express.static(path.join(__dirname, 'client')));
 
 app.post('/api/user/login',
     passport.authenticate('local'),
-    function (req: any, res: { json: (arg0: {}) => void; }) {
-        // If this function gets called, authentication was successful.
-        // `req.user` contains the authenticated user.
+    function (req: Request, res: Response) {
+
         let api_response = {meta:{}};
+
         api_response.meta = {
             'status': 'success'
         };
+
         res.json(api_response);
     });
 
@@ -102,9 +103,10 @@ app.use('/api/cms', cms);
 app.use('/api/user', user);
 app.use('/api', job);
 
+app.get('/robots.txt', function (req: Request, res: Response) {
 
-app.get('/robots.txt', function (req: any, res: { type: (arg0: string) => void; send: (arg0: string) => void; }) {
     res.type('text/plain');
+
     if (app.get('env') === 'production') {
         res.send("User-agent: *\nDisallow: /admin/");
     } else {
@@ -125,7 +127,7 @@ app.use('/admin/', admin);
 app.use('/admin/*', admin);
 
 // catch 404 and forward to error handler
-app.use(function (req: any, res: any, next: (arg0: Error) => void) {
+app.use(function (req: Request, res: Response, next: NextFunction) {
     let err:any = new Error('Not Found');
     err.status = 404;
 
@@ -146,10 +148,7 @@ if (app.get('env') === 'development' || app.get('env') === 'docker') {
 
     // development error handler
     // will print stacktrace
-    app.use(function (err: { status: any; message: any; }, req: any, res: {
-        status: (arg0: any) => void;
-        render: (arg0: string, arg1: { message: any; error: any; }) => void;
-    }, next: any) {
+    app.use(function (err:any, req: Request, res: Response, next: NextFunction){
 
         console.log(err);
 
@@ -165,21 +164,17 @@ if (app.get('env') === 'development' || app.get('env') === 'docker') {
 
     if (app.get('env') === 'production'){
         app.set('view cache', true);
-
     }
 
-    // production error handler
     // no stacktraces leaked to user
-    app.use(function (err: { status: any; }, req: any, res: {
-        status: (arg0: any) => void;
-        render: (arg0: string, arg1: { message: string; error: {}; }) => void;
-    }, next: any) {
+    app.use(function (err:any, req: Request, res: Response, next: NextFunction) {
         res.status(err.status || 500);
         res.render('error', {
             message: 'OOPS. You broke something.',
             error: {}
         });
     });
+
 } else {
 
     throw new Error('You must specify an environment');
