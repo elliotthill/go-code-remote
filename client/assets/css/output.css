@@ -1322,10 +1322,6 @@ input:checked + .toggle-bg {
   margin-left: 0.25rem;
 }
 
-.ml-12 {
-  margin-left: 3rem;
-}
-
 .ml-2 {
   margin-left: 0.5rem;
 }
@@ -1336,10 +1332,6 @@ input:checked + .toggle-bg {
 
 .ml-6 {
   margin-left: 1.5rem;
-}
-
-.ml-8 {
-  margin-left: 2rem;
 }
 
 .ml-auto {
@@ -3015,6 +3007,10 @@ input:checked + .toggle-bg {
   padding-right: 1rem;
 }
 
+.pr-6 {
+  padding-right: 1.5rem;
+}
+
 .pr-8 {
   padding-right: 2rem;
 }
@@ -3047,10 +3043,6 @@ input:checked + .toggle-bg {
   padding-top: 2rem;
 }
 
-.pr-6 {
-  padding-right: 1.5rem;
-}
-
 .text-left {
   text-align: left;
 }
@@ -3068,9 +3060,9 @@ input:checked + .toggle-bg {
   line-height: 2rem;
 }
 
-.text-5xl {
-  font-size: 3rem;
-  line-height: 1;
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
 }
 
 .text-base {
@@ -3096,11 +3088,6 @@ input:checked + .toggle-bg {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
-}
-
-.text-4xl {
-  font-size: 2.25rem;
-  line-height: 2.5rem;
 }
 
 .font-bold {
@@ -3211,6 +3198,16 @@ input:checked + .toggle-bg {
 .text-cyan-900 {
   --tw-text-opacity: 1;
   color: rgb(22 78 99 / var(--tw-text-opacity));
+}
+
+.text-emerald-400 {
+  --tw-text-opacity: 1;
+  color: rgb(52 211 153 / var(--tw-text-opacity));
+}
+
+.text-emerald-700 {
+  --tw-text-opacity: 1;
+  color: rgb(4 120 87 / var(--tw-text-opacity));
 }
 
 .text-gray-100 {
@@ -3471,56 +3468,6 @@ input:checked + .toggle-bg {
 .text-yellow-900 {
   --tw-text-opacity: 1;
   color: rgb(99 49 18 / var(--tw-text-opacity));
-}
-
-.text-emerald-600 {
-  --tw-text-opacity: 1;
-  color: rgb(5 150 105 / var(--tw-text-opacity));
-}
-
-.text-emerald-400 {
-  --tw-text-opacity: 1;
-  color: rgb(52 211 153 / var(--tw-text-opacity));
-}
-
-.text-cyan-400 {
-  --tw-text-opacity: 1;
-  color: rgb(34 211 238 / var(--tw-text-opacity));
-}
-
-.text-teal-400 {
-  --tw-text-opacity: 1;
-  color: rgb(22 189 202 / var(--tw-text-opacity));
-}
-
-.text-emerald-800 {
-  --tw-text-opacity: 1;
-  color: rgb(6 95 70 / var(--tw-text-opacity));
-}
-
-.text-emerald-500 {
-  --tw-text-opacity: 1;
-  color: rgb(16 185 129 / var(--tw-text-opacity));
-}
-
-.text-emerald-700 {
-  --tw-text-opacity: 1;
-  color: rgb(4 120 87 / var(--tw-text-opacity));
-}
-
-.text-emerald-300 {
-  --tw-text-opacity: 1;
-  color: rgb(110 231 183 / var(--tw-text-opacity));
-}
-
-.text-sky-600 {
-  --tw-text-opacity: 1;
-  color: rgb(2 132 199 / var(--tw-text-opacity));
-}
-
-.text-emerald-200 {
-  --tw-text-opacity: 1;
-  color: rgb(167 243 208 / var(--tw-text-opacity));
 }
 
 .underline {
@@ -6133,23 +6080,19 @@ html {
     padding-top: 1.5rem;
   }
 
-  .md\:pt-4 {
-    padding-top: 1rem;
-  }
-
   .md\:text-2xl {
     font-size: 1.5rem;
     line-height: 2rem;
   }
 
-  .md\:text-sm {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-  }
-
   .md\:text-5xl {
     font-size: 3rem;
     line-height: 1;
+  }
+
+  .md\:text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 
   .md\:font-medium {
@@ -6242,6 +6185,11 @@ html {
     flex-direction: row;
   }
 
+  .lg\:px-0 {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
   .lg\:px-6 {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
@@ -6257,11 +6205,6 @@ html {
     padding-bottom: 0px;
   }
 
-  .lg\:px-0 {
-    padding-left: 0px;
-    padding-right: 0px;
-  }
-
   .lg\:py-6 {
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
@@ -6273,15 +6216,6 @@ html {
 
   .lg\:pt-12 {
     padding-top: 3rem;
-  }
-
-  .lg\:pt-8 {
-    padding-top: 2rem;
-  }
-
-  .lg\:text-5xl {
-    font-size: 3rem;
-    line-height: 1;
   }
 }
 
