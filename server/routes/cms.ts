@@ -1,6 +1,6 @@
 'use strict';
 
-import express from 'express';
+import express, {Request, Response, NextFunction } from 'express';
 const router = express.Router();
 
 import {models, sequelize} from '../models/index.js';
@@ -261,6 +261,27 @@ router.post('/job/check-duplicates', async (req, res, next) => {
 
     res.json(result);
 
+});
+
+router.post('/job/:job/boost', async function(req: Request, res: Response, next: NextFunction){
+
+    if (!req.isAuthenticated()) {
+        res.status(500).json({'meta': {'status': 'error', 'error': 'Permission denied'}});
+        return;
+    }
+
+    const job_id = req.params.job;
+
+    const job = await models.Job.findOne({where: {id: job_id}});
+
+    if (!job) {
+        res.status(500).send("Error invalid job provided");
+        return;
+    }
+
+    const response = await job.update({created: sequelize.literal('CURRENT_TIMESTAMP')});
+
+    res.json(response);
 });
 
 /*
