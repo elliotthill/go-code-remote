@@ -14,7 +14,7 @@ import RatingLabel from "./ui/rating-label.js";
 import LoadingSpinner from "./ui/loading-spinner.js";
 
 //Access user info
-import UserContext from './services/user-context.js';
+import UserContext, { UserContextType } from './services/user-context.js';
 import {User} from './services/auth.js';
 import {ValueLabel,ValueLabelId} from "./types/form.js";
 import {Job} from "./types/job.js";
@@ -23,8 +23,7 @@ import {Job} from "./types/job.js";
 
 export default function App() {
 
-  //@ts-ignore
-  const {currentUser, setCurrentUser} = useContext<User | null>(UserContext);
+  const {currentUser, setCurrentUser} = useContext<UserContextType>(UserContext);
 
   //The array of jobs
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -228,7 +227,7 @@ export default function App() {
 
 
   return (
-    <div>
+    <>
       <CreateButton show={currentUser} />
       {/* Filters in a 4x2 grid */}
       <div className="flex flex-col lg:flex-row py-0">
@@ -442,7 +441,7 @@ export default function App() {
       <div ref={bottom} className="text-center block w-full h-[100px]">
       </div>
 
-    </div>
+    </>
   )
 }
 

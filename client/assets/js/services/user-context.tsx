@@ -1,12 +1,20 @@
-import React, { useState, useEffect, createContext } from 'react';
-import { Redirect } from 'react-router-dom';
+import React, { useState, useEffect, createContext, Dispatch, SetStateAction } from 'react';
 import { isAuthenticated, User } from './auth.js';
 
 
-const UserContext = createContext<User | null>(null);
+export interface UserContextType {
+    currentUser: User | null
+    setCurrentUser: Dispatch<SetStateAction<User | null>>
+}
+
+type ContextProviderProps = {
+    children?: React.ReactNode
+}
+
+const UserContext = createContext<UserContextType>({currentUser:null,setCurrentUser:()=>{}});
 
 
-export const UserProvider = ({ children }) => {
+export const UserProvider = ({ children }: ContextProviderProps) => {
   const  [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
