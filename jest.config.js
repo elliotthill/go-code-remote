@@ -1,10 +1,11 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
-const tsPreset = require('ts-jest/jest-preset')
-const puppeteerPreset = require('jest-puppeteer/jest-preset')
-
-module.exports = {
-  ...tsPreset,
-  ...puppeteerPreset,
-  //testEnvironment: 'node',
-  testPathIgnorePatterns: [".d.ts", ".js"]
+//puppeteerPreset = import('jest-puppeteer/jest-preset')
+import tsPreset from 'ts-jest';
+import puppeteerPreset from 'jest-puppeteer'
+export default {
+    ...tsPreset,
+    ...puppeteerPreset,
+    //testEnvironment: 'jest-environment-node',
+    testPathIgnorePatterns: [".d.ts", ".js"],
+    transform: {}
 };
