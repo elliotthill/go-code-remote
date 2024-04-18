@@ -1,7 +1,5 @@
 //Express framework
 import express,{Request, Response, NextFunction} from 'express'; //const express = require('express');
-
-
 //Express session
 import session from 'express-session'; //const session = require('express-session');
 import connectSessionSequelize from 'connect-session-sequelize'; //const sequelizeStore = require('connect-session-sequelize')(session.Store);
@@ -48,7 +46,6 @@ const __dirname = path.dirname(__filename);
 /*
  * Security
  */
-
 //Template Rendering
 app.set('views', path.join(__dirname, 'client/views'));
 app.set('view engine', 'pug');
@@ -61,7 +58,6 @@ app.use(favicon(path.join(__dirname, 'client', '/assets/images/favicon.ico')));
 app.use(bodyParser.json({limit:1024*1024*20}));
 app.use(bodyParser.urlencoded({extended:true,limit:1024*1024*20}));
 app.use(cookieParser());
-
 
 
 let today = new Date();
@@ -85,6 +81,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(express.static(path.join(__dirname, 'client')));
+app.use(express.static(path.join(__dirname, 'client/dist')));
 
 app.post('/api/user/login',
     passport.authenticate('local'),

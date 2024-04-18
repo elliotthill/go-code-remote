@@ -12,14 +12,14 @@ const debug = debugClass('node_app:server');
 
 import http from 'http'; //    var http = require('http');
 
-import {models, sequelize} from '../server/models/index.js'; //var models = require("../server/models");
+import {sequelize} from '../server/models/index.js'; //var models = require("../server/models");
 import os from 'os';
 
-if (cluster.isMaster)
+if (cluster.isPrimary)
 {
     // Count the machine's CPUs
     const cpuCount = os.cpus().length;
-    
+
     // Create a worker for each CPU
     for (let i = 0; i < cpuCount; i += 1) {
         cluster.fork();

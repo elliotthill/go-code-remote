@@ -14,9 +14,9 @@ The project is split into two areas: client and server. With the /server being a
 
 ### Dependencies
 
-The server is expecting a mysql/mariadb database, you can configure this in /server/config/ and switch to your DB of choice. Sequelize is used as the ORM.
+Sequelize is expecting a database, look in server/config/
 
-React is used for the front-end, and Tailwind is used as the CSS framework.
+Front End: React & Tailwind
 
 
 ### Installing
@@ -26,8 +26,6 @@ In the root directory, run
 ```
 npm install
 ```
-
-(NOTE: you may need to use the flag --force due to an express dependency conflict),
 
 Now we run npm for the front end dependencies in /client:
 
@@ -46,15 +44,17 @@ In the root directory run
 npm start
 ```
 
-Which will run the dev server, which is basically nodemon and webpack running together.
+Which will run the dev server, nodemon and webpack running together.
 
-I suggest using babel with a file watcher, or equivalent, to build your .ts and .tsx files as you go. Babel config is included.
 
-You will also need to build Tailwind CSS as you go
-
+The front end site runs in its own npm module. So run that too for ts compilation of React
+templates and tailwind bundling
 ```
-npx tailwindcss -i assets/css/style.css -o assets/css/output.css --watch
+cd client
+npm start
 ```
+
+
 
 ## Running tests
 
@@ -62,7 +62,7 @@ To run all tests:
 ```
 npx jest
 ```
-Jest uses puppeteer to E2E test the site that should be running locally. The idea here is to do the test as part of CI/CD pipeline on some sort of containerized platform.
+Jest uses puppeteer to E2E test the site that should be running locally.
 
 
 

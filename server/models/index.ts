@@ -21,7 +21,7 @@ import locationInit, {Location} from "./location.js";
 import jobMetaInit, {JobMeta} from "./job_meta.js";
 import jobInit, {Job} from "./job.js";
 import companyInit, {Company} from "./company.js";
-
+import renderCacheStoreInit, {RenderCacheStore} from "./render_cache.js";
 
 userInit(sequelize);
 roleInit(sequelize);
@@ -30,6 +30,7 @@ locationInit(sequelize);
 jobMetaInit(sequelize);
 jobInit(sequelize);
 companyInit(sequelize);
+renderCacheStoreInit(sequelize);
 
 export const models = {
     User,
@@ -38,6 +39,7 @@ export const models = {
     Location,
     JobMeta,
     Job,
-    Company
+    Company,
+    RenderCacheStore
 };
 
