@@ -1,0 +1,26 @@
+version: 0.0
+os: linux
+files:
+    - source: /
+      destination: /srv/www/node/go-code-remote
+permissions:
+    - object: /srv/www/node/go-code-remote
+      mode: 775
+      owner: node
+      group: node
+      type:
+          - directory
+          - file
+hooks:
+    AfterInstall:
+        - location: deploy/deps.sh
+          timeout: 100
+          runas: node
+    ApplicationStart:
+        - location: deploy/start.sh
+          timeout: 100
+          runas: node
+    ValidateService:
+        - location: deploy/validate.sh
+          timeout: 100
+          runas: node

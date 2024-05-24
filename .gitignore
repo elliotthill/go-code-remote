@@ -31,7 +31,7 @@ node_modules
 jspm_packages
 # Optional npm cache directory
 .npm
-
+.env
 # Optional REPL history
 .node_repl_history
 
@@ -43,9 +43,10 @@ dump.rdb
 **/*.js
 **/*.js.map
 
-
-app.js
-app.js.map
+#Override for migrations
+!server/models/migrations/*.js
+!webpack.prod.js
+!bin/*.js
 
 client/**/*.js
 client/**/*.jsx

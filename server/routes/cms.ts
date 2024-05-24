@@ -8,6 +8,8 @@ import {QueryTypes} from "sequelize";
 import {Meta} from "../models/meta.js";
 import {Job} from "../models/job.js";
 
+import { add_synonyms } from '../services/job.js';
+
 interface MetaValueLabel{
     label: string;
     value: string;
@@ -195,21 +197,6 @@ router.post('/job', async function(req, res) {
     res.json({'meta':{'status': 'success'}});
 
 });
-
-function add_synonyms(role: string, search_keywords: string) {
-
-    if (role.includes("Developer")) {
-        search_keywords += " Engineer";
-    }
-
-    if (role.includes("Engineer"))
-        search_keywords += " Developer";
-
-
-
-    return search_keywords;
-}
-
 
 router.post('/job/:job/delete', async function(req, res, next){
 

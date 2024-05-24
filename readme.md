@@ -66,4 +66,13 @@ Jest uses puppeteer to E2E test the site that should be running locally.
 
 
 
+## Database schema migrations
+Sequelize provides a skeleton system for running migrations, it doesn't yet automatically detect changes, so they have to be manually added in for each migration file.
+
+```sequelize migration:create  # Generates a new migration file.```
+
+Run the migration
+
+```sequelize db:migrate```
+
 

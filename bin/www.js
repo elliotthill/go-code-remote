@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import "dotenv/config"
 /*
  * Clustering
  */
@@ -15,7 +16,7 @@ import http from 'http'; //    var http = require('http');
 import {sequelize} from '../server/models/index.js'; //var models = require("../server/models");
 import os from 'os';
 
-if (cluster.isPrimary)
+if (cluster.isPrimary && process.env.NODE_ENV !== 'development')
 {
     // Count the machine's CPUs
     const cpuCount = os.cpus().length;
@@ -97,6 +98,13 @@ if (cluster.isPrimary)
             : 'port ' + addr.port;
         debug('Listening on ' + bind);
       }
+
+        process.on("SIGINT", async () => {
+            console.log("Ctrl+c was pressed")
+            server.close(() => {
+                process.exit()
+            })
+        })
     });
 
 

@@ -3,7 +3,6 @@
 import {Sequelize} from 'sequelize';
 const env = process.env.NODE_ENV || 'development';
 
-//@ts-ignore
 import globalConfig from '../config/config.js';
 const config = globalConfig[env];
 
@@ -22,6 +21,7 @@ import jobMetaInit, {JobMeta} from "./job_meta.js";
 import jobInit, {Job} from "./job.js";
 import companyInit, {Company} from "./company.js";
 import renderCacheStoreInit, {RenderCacheStore} from "./render_cache.js";
+import crawlInit, {Crawl} from './crawl.js';
 
 userInit(sequelize);
 roleInit(sequelize);
@@ -31,6 +31,7 @@ jobMetaInit(sequelize);
 jobInit(sequelize);
 companyInit(sequelize);
 renderCacheStoreInit(sequelize);
+crawlInit(sequelize);
 
 export const models = {
     User,
@@ -40,6 +41,7 @@ export const models = {
     JobMeta,
     Job,
     Company,
-    RenderCacheStore
+    RenderCacheStore,
+    Crawl
 };
 

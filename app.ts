@@ -1,3 +1,4 @@
+import "dotenv/config"
 //Express framework
 import express,{Request, Response, NextFunction} from 'express'; //const express = require('express');
 //Express session
