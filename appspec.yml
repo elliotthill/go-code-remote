@@ -14,7 +14,7 @@ permissions:
 hooks:
     AfterInstall:
         - location: deploy/deps.sh
-          timeout: 100
+          timeout: 500
           runas: node
     ApplicationStart:
         - location: deploy/start.sh
