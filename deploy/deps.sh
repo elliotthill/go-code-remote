@@ -8,9 +8,11 @@ export NVM_DIR="$HOME/.nvm"
 
 
 npm install
+npm run compile
 npm run build
 cd client
 #No .env file in client w
 NODE_ENV=production npm install
 NODE_ENV=production npm run tailwind
+NODE_ENV=production npm run compile
 cd ..

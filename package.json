@@ -9,6 +9,7 @@
         "watch:server": "nodemon  bin/www.js --watch \"./client/dist\"",
         "watch:serverLog": "node bin/www.js --inspect",
         "watch:tsc": "tsc -w",
+        "compile": "tsc",
         "test": "jest",
         "build": "webpack --config webpack.prod.js"
     },

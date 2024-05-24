@@ -9,6 +9,7 @@
         "start": "npm-run-all --parallel watch:tailwind watch:tsc",
         "watch:tailwind": "npx tailwindcss -i assets/css/style.css -o assets/css/output.css --watch",
         "watch:tsc": "tsc -w",
+        "compile": "tsc",
         "tailwind": "npx tailwindcss -i assets/css/style.css -o assets/css/output.css --minify",
         "stop": "pkill -SIGINT -f webpack; echo 'killed webpack'"
     },
