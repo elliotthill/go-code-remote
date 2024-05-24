@@ -1,3 +1,4 @@
+import "dotenv/config"
 import {URL, URLSearchParams} from "node:url"
 import {create as createJob} from "../services/job.js"
 const serialyzURL = process.env.NODE_ENV !== "production" ? "http://127.0.0.1:3001" : "https://serialyz.com"
